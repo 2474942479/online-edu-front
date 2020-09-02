@@ -22,7 +22,7 @@
         </p>
         <p class="gray">课程讲师：{{ finalreleaseInfo.teacherName }}</p>
         <h4 class="red">优惠:{{ Number(finalreleaseInfo.reductionMoney) }}￥</h4><br><br><br>
-        <h3 class="red">合计:{{ (Number(finalreleaseInfo.price) - Number(finalreleaseInfo.reductionMoney))}}￥</h3>
+        <h3 class="red">合计:{{ Number(finalreleaseInfo.price - finalreleaseInfo.reductionMoney).toFixed(2)}}￥</h3>
         
         
       </div>

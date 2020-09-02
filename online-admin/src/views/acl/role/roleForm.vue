@@ -94,7 +94,7 @@ export default {
         ids = []
       }
     // var ids =  this.$refs.tree.getCheckedKeys().concat(this.$refs.tree.getHalfCheckedKeys()).join(",");
-      console.log(ids);
+      // console.log(ids);
       //vue elementUI tree树形控件获取父节点ID的实例
       //node_modules\element-ui\lib\element-ui.common.js
       //25348行修改源码

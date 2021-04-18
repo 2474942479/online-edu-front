@@ -5,7 +5,7 @@
       <section class="container">
         <h1 id="logo">
           <a href="#" title="思勤教育">
-            <img src="~/assets/img/logo1.png" width="100%" alt="思勤教育" />
+            <img src="~/assets/img/JLWLogo.png" width="100%" alt="思勤教育" />
           </a>
         </h1>
         <div class="h-r-nsl">

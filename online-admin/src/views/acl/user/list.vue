@@ -4,7 +4,7 @@
     <!--查询表单-->
     <el-form :inline="true" class="demo-form-inline">
       <el-form-item>
-        <el-input v-model="searchObj.username" placeholder="用户名" />
+        <el-input v-model="userQueryDTO.username" placeholder="用户名" />
       </el-form-item>
 
       <el-button type="primary" icon="el-icon-search" @click="fetchData()">查询</el-button>
@@ -101,7 +101,7 @@ export default {
       total: 0, // 数据库中的总记录数
       page: 1, // 默认页码
       limit: 10, // 每页记录数
-      searchObj: {}, // 查询表单对象
+      userQueryDTO: {}, // 查询表单对象
       multipleSelection: [], // 批量选择中选择的记录列表
     };
   },
@@ -133,12 +133,12 @@ export default {
     fetchData(page = 1) {
       console.log("翻页。。。" + page);
       // 异步获取远程数据（ajax）
-      this.page = page;
-
+      this.userQueryDTO.current = page
+      this.userQueryDTO.size = this.limit
       user
-        .getPageList(this.page, this.limit, this.searchObj)
+        .getPageList(this.userQueryDTO)
         .then((response) => {
-          this.list = response.data.items;
+          this.list = response.data.records;
           this.total = response.data.total;
 
           // 数据加载并绑定成功
@@ -149,7 +149,7 @@ export default {
     // 重置查询表单
     resetData() {
       console.log("重置查询表单");
-      this.searchObj = {};
+      this.userQueryDTO = {};
       this.fetchData();
     },
 

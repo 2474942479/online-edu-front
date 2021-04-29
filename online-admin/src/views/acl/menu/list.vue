@@ -165,8 +165,8 @@ export default {
     fetchNodeList() {
       menu.getNestedTreeList().then((response) => {
         if (response.success === true) {
-          console.log(response.data.permissionList);
-          this.menuList = response.data.permissionList;
+          console.log(response.data);
+          this.menuList = response.data;
           console.log(this.menuList);
         }
       });

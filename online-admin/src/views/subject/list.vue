@@ -42,7 +42,7 @@ export default {
   methods: {
     getSubject() {
       subject.getAllList().then((response) => {
-        this.data = response.data.list;
+        this.data = response.data;
       });
     },
 

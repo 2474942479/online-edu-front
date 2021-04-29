@@ -32,7 +32,7 @@ service.interceptors.response.use(
      */
     const res = response.data
     // debugger
-    if (res.code !== 20000) {
+    if (res.code !== 0) {
       Message({
         message: res.message,
         type: 'error',

@@ -21,11 +21,11 @@ export default {
     },
     
     // 分页条件查询所有的课程
-    getCourseListPage(current,size,courseQuery){
+    getCourseListPage(courseQueryDTO){
         return request({
-            url: `/eduService/course/getCourseListPage/${current}/${size}`,   //  表达式赋值
+            url: `/eduService/course/getCourseListPage`,
             method: 'post',
-            data: courseQuery
+            data: courseQueryDTO
         })
     },
 

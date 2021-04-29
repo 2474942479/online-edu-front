@@ -4,11 +4,11 @@ const api_name = '/admin/acl/user'
 
 export default {
 
-    getPageList(page, limit, searchObj) {
+    getPageList(userQueryDTO) {
         return request({
-            url: `${api_name}/${page}/${limit}`,
-            method: 'get',
-            params: searchObj // url查询字符串或表单键值对
+            url: `${api_name}/pageUser`,
+            method: 'post',
+            data: userQueryDTO // url查询字符串或表单键值对
         })
     },
     getById(id) {

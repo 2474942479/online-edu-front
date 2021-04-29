@@ -3,19 +3,19 @@
   <div class="app-container">
     <h1>课程列表</h1>
     <!-- 条件查询表单 -->
-    <el-form :inline="true" :model="courseQuery" class="demo-form-inline">
+    <el-form :inline="true" :model="courseQueryDTO" class="demo-form-inline">
       <el-form-item label="课程标题">
-        <el-input v-model="courseQuery.title" placeholder="请输入课程标题"></el-input>
+        <el-input v-model="courseQueryDTO.title" placeholder="请输入课程标题"></el-input>
       </el-form-item>
       <el-form-item label="课程状态">
-        <el-select v-model="courseQuery.status" placeholder="未发布">
+        <el-select v-model="courseQueryDTO.status" placeholder="未发布">
           <el-option label="已发布" value="Normal"></el-option>
           <el-option label="未发布" value="Draft"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="添加时间">
         <el-date-picker
-          v-model="courseQuery.begin"
+          v-model="courseQueryDTO.begin"
           type="datetime"
           placeholder="选择开始时间"
           value-format="yyyy-MM-dd HH:mm:ss"
@@ -24,7 +24,7 @@
       </el-form-item>
       <el-form-item>
         <el-date-picker
-          v-model="courseQuery.end"
+          v-model="courseQueryDTO.end"
           type="datetime"
           placeholder="选择截止时间"
           value-format="yyyy-MM-dd HH:mm:ss"
@@ -33,7 +33,7 @@
       </el-form-item>
       <el-form-item>
         <el-button round type="primary" icon="el-icon-search" @click="getList()">查询</el-button>
-        <el-button round type="danger " icon="el-icon-delete" @click="resetcourseQuery()">清空</el-button>
+        <el-button round type="danger " icon="el-icon-delete" @click="resetcourseQueryDTO()">清空</el-button>
       </el-form-item>
     </el-form>
     <!-- 结果展示列表 -->
@@ -125,7 +125,7 @@ export default {
       page: 1, //当前页
       size: 5, //每页记录数
       total: 0, //总记录数
-      courseQuery: {}, //查询条件对象  双向绑定自动填充
+      courseQueryDTO: {}, //查询条件对象  双向绑定自动填充
       list: null, //查询之后接口返回的集合
     };
   },
@@ -148,23 +148,24 @@ export default {
 
     // 讲师列表 page = 1 意思是page默认值为1 改变后 将page赋值给this.page 做到分页切换
     getList(page = 1) {
-      this.page = page;
+      this.courseQueryDTO.current = page
+      this.courseQueryDTO.size = this.size
       course
-        .getCourseListPage(this.page, this.size, this.courseQuery)
+        .getCourseListPage(this.courseQueryDTO)
         .then((response) => {
           //请求成功
           this.listLoading = true;
           // response是接口返回的数据
           // console.log(response);
-          this.list = response.data.list;
+          this.list = response.data.records;
           this.total = response.data.total;
           this.listLoading = false;
         });
     },
 
     // 清空查询条件并刷新页面(重新查询)
-    resetcourseQuery() {
-      this.courseQuery = {};
+    resetcourseQueryDTO() {
+      this.courseQueryDTO = {};
       this.getList();
     },
 

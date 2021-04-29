@@ -4,11 +4,11 @@ const api_name = '/admin/acl/role'
 
 export default {
 
-    getPageList(page, limit, searchObj) {
+    getPageList(roleQueryDTO) {
         return request({
-            url: `${api_name}/${page}/${limit}`,
-            method: 'get',
-            params: searchObj // url查询字符串或表单键值对
+            url: `${api_name}/pageRole`,
+            method: 'post',
+            data: roleQueryDTO // url查询字符串或表单键值对
         })
     },
     getById(id) {

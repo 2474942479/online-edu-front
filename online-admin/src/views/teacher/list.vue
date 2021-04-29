@@ -2,19 +2,19 @@
   <div class="app-container">
     <h1>讲师列表</h1>
     <!-- 条件查询表单 -->
-    <el-form :inline="true" :model="teacherQuery" class="demo-form-inline">
+    <el-form :inline="true" :model="teacherQueryDTO" class="demo-form-inline">
       <el-form-item label="姓名">
-        <el-input v-model="teacherQuery.name" placeholder="请输入姓名"></el-input>
+        <el-input v-model="teacherQueryDTO.name" placeholder="请输入姓名"></el-input>
       </el-form-item>
       <el-form-item label="讲师头衔">
-        <el-select v-model="teacherQuery.level" placeholder="高级讲师">
+        <el-select v-model="teacherQueryDTO.level" placeholder="高级讲师">
           <el-option label="高级讲师" value="1"></el-option>
           <el-option label="首席讲师" value="2"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="加入时间">
         <el-date-picker
-          v-model="teacherQuery.begin"
+          v-model="teacherQueryDTO.begin"
           type="month"
           placeholder="选择开始时间"
           value-format="yyyy-MM-dd HH:mm:ss"
@@ -23,7 +23,7 @@
       </el-form-item>
       <el-form-item>
         <el-date-picker
-          v-model="teacherQuery.end"
+          v-model="teacherQueryDTO.end"
           type="month"
           placeholder="选择截止时间"
           value-format="yyyy-MM-dd HH:mm:ss"
@@ -32,7 +32,7 @@
       </el-form-item>
       <el-form-item>
         <el-button round type="primary" icon="el-icon-search" @click="getList()">查询</el-button>
-        <el-button round type="danger " icon="el-icon-delete" @click="resetteacherQuery()">清空</el-button>
+        <el-button round type="danger " icon="el-icon-delete" @click="resetteacherQueryDTO()">清空</el-button>
       </el-form-item>
     </el-form>
     <!-- 结果展示列表 -->
@@ -224,13 +224,16 @@
       </el-table-column>
     </el-table>
 
-    <!-- 分页 current-page:当前页 page-size页面显示的数量    
+    <!-- 分页 
+    current-page:当前页 
+    page-size页面显示的数量    
     确定了page-size和total 根据total/size 可以自动判断出有多少页   
-    @current-change="方法名（不可以加（））"  当前页变动时候触发的事件-->
+    @current-change="方法名（不可以加（））"  当前页变动时候触发的事件
+    -->
     <el-pagination
       :current-page="page"
-      :page-size="size"
-      :total="total"
+      :page-size="size" 
+      :total="total" 
       style="padding: 30px 0; text-align: center;"
       layout="total, prev, pager, next, jumper"
       @current-change="getList"
@@ -273,7 +276,7 @@ export default {
       page: 1, //当前页
       size: 5, //每页记录数
       total: 0, //总记录数
-      teacherQuery: {}, //查询条件对象  双向绑定自动填充
+      teacherQueryDTO: {}, //查询条件对象  双向绑定自动填充
       list: null, //查询之后接口返回的集合
     };
   },
@@ -297,15 +300,16 @@ export default {
 
     // 讲师列表 page = 1 意思是page默认值为1 改变后 将page赋值给this.page 做到分页切换
     getList(page = 1) {
-      this.page = page;
+      this.teacherQueryDTO.current = page
+      this.teacherQueryDTO.size = this.size
       teacher
-        .getTeacherListPage(this.page, this.size, this.teacherQuery)
+        .getTeacherListPage(this.teacherQueryDTO)
         .then((response) => {
           //请求成功
           this.listLoading = true;
           // response是接口返回的数据
-          // console.log(response);
-          this.list = response.data.list;
+          console.log(response);
+          this.list = response.data.records;
           this.total = response.data.total;
           this.listLoading = false;
         });
@@ -317,8 +321,8 @@ export default {
     },
 
     // 清空查询条件并刷新页面(重新查询)
-    resetteacherQuery() {
-      this.teacherQuery = {};
+    resetteacherQueryDTO() {
+      this.teacherQueryDTO = {};
       this.getList();
     },
 

@@ -59,8 +59,9 @@ const user = {
         getInfo(state.token).then(response => {
           // debugger
           const data = response.data
-          if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-            commit('SET_ROLES', data.roles)
+          console.log(data)
+          if (data.roleNameList && data.roleNameList.length > 0) { // 验证返回的roles是否是一个非空数组
+            commit('SET_ROLES', data.roleNameList)
             //console.log(data.roles)
           } else {
             reject('getInfo: roles must be a non-null array !')
@@ -112,7 +113,7 @@ const user = {
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
         logout(state.token).then(() => {
-          debugger
+          // debugger
           commit('SET_TOKEN', '')// 清空前端vuex中存储的数据
           commit('SET_ROLES', [])// 清空前端vuex中存储的数据
           commit('SET_BUTTONS', [])

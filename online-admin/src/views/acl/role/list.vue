@@ -104,9 +104,8 @@ export default {
       this.$router.push({ path: "/acl/role/add" });
     },
 
-    // 加载讲师列表数据
+    // 加载角色列表数据
     fetchData(page = 1) {
-      console.log("翻页。。。" + page);
       // 异步获取远程数据（ajax）
       this.roleQueryDTO.currentx = page
       this.roleQueryDTO.size = this.limit

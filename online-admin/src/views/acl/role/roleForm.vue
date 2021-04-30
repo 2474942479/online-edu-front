@@ -31,9 +31,6 @@ export default {
   // 监听器
   watch: {
     $route(to, from) {
-      console.log('路由变化......')
-      console.log(to)
-      console.log(from)
       this.init()
     }
   },
@@ -49,15 +46,15 @@ export default {
           this.fetchDataById(this.roleId)
       } 
     },
+
     fetchDataById(roleId){
         menu.toAssign(roleId).then(response => {
-            this.data = response.data.children
+            this.data = response.data
             var jsonList = JSON.parse(JSON.stringify(this.data))
-            debugger;
+            console.log(jsonList)
             var list = []
             this.getJsonToList(list, jsonList[0]['children'])
-            console.log("最终集合")
-            console.log(list)
+            console.log("选中集合" + list)
             this.setCheckedKeys(list)
         })
     },
@@ -65,7 +62,7 @@ export default {
     getJsonToList(list, jsonList){
         //遍历这个集合对象，获取key的值
         for(var i = 0; i < jsonList.length; i++){
-            if(jsonList[i]['select'] == true && jsonList[i]['level'] == 4){
+            if(jsonList[i]['selected'] == true && jsonList[i]['level'] == 4){
                 list.push(jsonList[i]['id'])
             }
             if(jsonList[i]['children'] != null){ 
@@ -93,11 +90,7 @@ export default {
       if(ids === ',') {
         ids = []
       }
-    // var ids =  this.$refs.tree.getCheckedKeys().concat(this.$refs.tree.getHalfCheckedKeys()).join(",");
-      // console.log(ids);
-      //vue elementUI tree树形控件获取父节点ID的实例
-      //node_modules\element-ui\lib\element-ui.common.js
-      //25348行修改源码
+
       menu.doAssign(this.roleId, ids).then(response => {
           if(response.success){
               this.$message({

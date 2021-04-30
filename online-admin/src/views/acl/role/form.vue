@@ -42,7 +42,6 @@ export default {
 
   // 生命周期方法（在路由切换，组件不变的情况下不会被调用）
   created() {
-    console.log('form created ......')
     this.init()
   },
 
@@ -50,7 +49,7 @@ export default {
 
     // 表单初始化
     init() {
-      debugger
+      // debugger
       if (this.$route.params && this.$route.params.id) {
         const id = this.$route.params.id
         this.fetchDataById(id)
@@ -80,7 +79,7 @@ export default {
         if (response.success) {
           this.$message({
             type: 'success',
-            message: response.message
+           message:'添加成功'
           })
           this.$router.push({ path: '/acl/role/list' })
         }
@@ -94,7 +93,7 @@ export default {
         if (response.success) {
           this.$message({
             type: 'success',
-            message: response.message
+            message:'修改成功'
           })
           this.$router.push({ path: '/acl/role/list' })
         }
@@ -103,9 +102,8 @@ export default {
 
     // 根据id查询记录
     fetchDataById(id) {
-      roleApi.getById(id).then(response => {
-        debugger
-        this.role = response.data.item
+      roleApi.getById(id).then(response => { 
+        this.role = response.data
       })
     }
 

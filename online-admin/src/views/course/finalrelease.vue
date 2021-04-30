@@ -84,7 +84,7 @@ export default {
             .then((response) => {
               this.$message({
                 type: "success",
-                message: response.message,
+                message: "发布成功",
               });
               // 保存课程并跳转到课程列表页面
               this.$router.push({ path: `/course/list` });

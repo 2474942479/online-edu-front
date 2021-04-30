@@ -60,7 +60,7 @@ export default {
 
   // 生命周期方法（在路由切换，组件不变的情况下不会被调用）
   created() {
-    console.log('form created ......')
+    console.log('from created ......')
     this.init()
   },
 
@@ -68,7 +68,7 @@ export default {
 
     // 表单初始化
     init() {
-      debugger
+      // debugger
       if (this.$route.params && this.$route.params.id) {
         const id = this.$route.params.id
         this.fetchDataById(id)
@@ -93,12 +93,12 @@ export default {
 
    
     saveData() {
-      userApi.save(this.user).then(response => {
+      userApi.saveOrUpdateUserInfo(this.user).then(response => {
         // debugger
         if (response.success) {
           this.$message({
             type: 'success',
-            message: response.message
+            message: "添加成功"
           })
           this.$router.push({ path: '/acl/user/list' })
         }
@@ -106,11 +106,12 @@ export default {
     },
 
     updateData() { 
-      userApi.updateById(this.user).then(response => {
+      this.user.password = null
+      userApi.saveOrUpdateUserInfo(this.user).then(response => {
         if (response.success) {
           this.$message({
             type: 'success',
-            message: response.message
+            message: "修改成功"
           })
           this.$router.push({ path: '/acl/user/list' })
         }
@@ -120,8 +121,8 @@ export default {
     // 根据id查询记录
     fetchDataById(id) {
       userApi.getById(id).then(response => {
-        debugger
-        this.user = response.data.item
+        // debugger
+        this.user = response.data
       })
     }
 

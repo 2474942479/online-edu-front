@@ -21,20 +21,20 @@
             v-if="(scope.row.level == 1 || scope.row.level == 2) && hasPerm('permission.add')"
             type="text"
             size="medium"
-            @click="() => {dialogFormVisible = true, menu.pid = scope.row.id}"
+            @click="() => {dialogFormValue = '添加菜单', dialogFormVisible = true, menu.pid = scope.row.id}"
           >添加菜单</el-button>
           <el-button
             v-if="scope.row.level == 3 &&  hasPerm('permission.add')"
             type="text"
             size="medium"
-            @click="() => {dialogPermissionVisible = true, permission.pid = scope.row.id}"
+            @click="() => {dialogPermissionValue = '添加功能', dialogPermissionVisible = true, permission.pid = scope.row.id}"
           >添加功能</el-button>
           <el-button
             v-if="scope.row.level == 4 &&  hasPerm('permission.update')"
             type="text"
             size="medium"
             @click="() => updateFunction(scope.row)"
-          >修改功能</el-button>
+          >修改</el-button>
           <el-button
             v-if="scope.row.level != 4 &&  hasPerm('permission.update')"
             type="text"
@@ -69,7 +69,7 @@
       </div>
     </el-dialog>
     <!-- 添加功能的窗口 -->
-    <el-dialog :visible.sync="dialogPermissionVisible" title="添加功能">
+    <el-dialog :visible.sync="dialogPermissionVisible" :title="dialogPermissionValue">
       <el-form
         ref="permission"
         :model="permission"
@@ -127,6 +127,7 @@ export default {
       },
       dialogFormValue: "添加菜单",
       dialogFormVisible: false,
+      dialogPermissionValue: "添加功能",
       dialogPermissionVisible: false,
       menu: menuForm,
       permission: perForm,
@@ -229,31 +230,6 @@ export default {
         }
       });
     },
-    appendLevelOne() {
-      menu
-        .saveLevelOne(this.menu)
-        .then((response) => {
-          this.dialogFormVisible = false;
-          this.$message({
-            type: "success",
-            message: "添加一级菜单成功",
-          });
-          // 刷新页面
-          this.fetchNodeList();
-          this.menu = { ...menuForm };
-          this.permission = { ...perForm };
-        })
-        .catch((response) => {
-          // 你们写：判断点击取消清空一下
-          this.dialogFormVisible = false;
-          this.$message({
-            type: "error",
-            message: "添加一级菜单失败",
-          });
-          this.menu = { ...menuForm };
-          this.permission = { ...perForm };
-        });
-    },
 
     append() {
       this.$refs.menu.validate((valid) => {
@@ -272,20 +248,32 @@ export default {
         }
       });
     },
-
-    update(obj) {
-      debugger;
-      menu.update(obj).then((response) => {
-        this.dialogFormVisible = false;
-        this.$message({
-          type: "success",
-          message: "修改成功",
+    appendLevelOne() {
+      menu
+        .saveLevelOne(this.menu)
+        .then((response) => {
+          this.dialogFormVisible = false;
+          this.$message({
+            type: "success",
+            message: "添加一级菜单成功",
+          });
+          // 刷新页面
+          this.fetchNodeList();
+          this.menu = { ...menuForm };
+          this.permission = { ...perForm };
+        })
+        .catch((response) => {
+          // 失败
+          this.dialogFormVisible = false;
+          this.$message({
+            type: "error",
+            message: "添加一级菜单失败",
+          });
+          this.menu = { ...menuForm };
+          this.permission = { ...perForm };
         });
-        // 刷新页面
-        this.fetchNodeList();
-        this.restData();
-      });
     },
+
     appendLevelTwo() {
       menu
         .saveLevelOne(this.menu)
@@ -306,7 +294,7 @@ export default {
         .catch((response) => {
           // 1、把文本框关
           this.dialogFormVisible = false;
-          // 2、提示成功
+          // 2、提示失败
           this.$message({
             type: "error",
             message: "添加二级分类失败",
@@ -316,20 +304,41 @@ export default {
           this.permission = { ...perForm };
         });
     },
+
+    update(obj) {
+      debugger;
+      menu.update(obj).then((response) => {
+        this.dialogFormVisible = false;
+        this.$message({
+          type: "success",
+          message: "修改成功",
+        });
+        // 刷新页面
+        this.fetchNodeList();
+        this.restData();
+      });
+    },
+    
     getById(data) {
+      this.dialogFormValue = "修改菜单";
       this.dialogFormVisible = true;
       this.menu = data;
     },
+
     updateFunction(data) {
+      this.dialogPermissionValue = "修改功能";
       this.dialogPermissionVisible = true;
       this.permission = data;
     },
+
     restData() {
       this.dialogPermissionVisible = false;
       this.dialogFormVisible = false;
       this.menu = { ...menuForm };
       this.permission = { ...perForm };
-    },
-  },
+    }
+
+  }
+  
 };
 </script>

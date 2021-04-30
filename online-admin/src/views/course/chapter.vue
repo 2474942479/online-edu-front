@@ -210,7 +210,7 @@ export default {
         this.dialogChapterFormVisible = false;
         this.$message({
           type: "success",
-          message: response.message,
+          message: "添加成功",
         });
         this.getChapterVo();
       });
@@ -222,7 +222,7 @@ export default {
         this.dialogChapterFormVisible = false;
         this.$message({
           type: "success",
-          message: response.message,
+          message: "修改成功",
         });
         this.getChapterVo();
       });
@@ -278,7 +278,7 @@ export default {
         this.dialogVideoFormVisible = false;
         this.$message({
           type: "success",
-          message: response.message,
+          message: "添加成功",
         }),
           this.getChapterVo();
       });
@@ -289,7 +289,7 @@ export default {
         this.dialogVideoFormVisible = false;
         this.$message({
           type: "success",
-          message: response.message,
+          message: "修改成功",
         }),
           this.getChapterVo();
       });
@@ -345,7 +345,7 @@ export default {
         this.videoInfo.videoOriginalName = "";
         this.$message({
           type: "success",
-          message: response.message,
+          message: "删除成功",
         });
       });
     },

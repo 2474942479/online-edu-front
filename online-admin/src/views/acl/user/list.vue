@@ -41,11 +41,11 @@
         <template slot-scope="scope">{{ (page - 1) * limit + scope.$index + 1 }}</template>
       </el-table-column>
 
-      <el-table-column prop="username" label="用户名" width="300" align="center"/>
+      <el-table-column prop="username" label="用户名" width="300" align="center" />
 
-      <el-table-column prop="nickName" label="用户昵称" align="center"/>
+      <el-table-column prop="nickName" label="用户昵称" align="center" />
 
-      <el-table-column prop="gmtCreate" label="创建时间" width="300" align="center"/>
+      <el-table-column prop="gmtCreate" label="创建时间" width="300" align="center" />
 
       <el-table-column label="操作" width="400" align="center">
         <template slot-scope="scope">
@@ -108,21 +108,17 @@ export default {
 
   // 生命周期函数：内存准备完毕，页面尚未渲染
   created() {
-    console.log("list created......");
     this.fetchData();
   },
 
   // 生命周期函数：内存准备完毕，页面渲染成功
-  mounted() {
-    console.log("list mounted......");
-  },
+  mounted() {},
 
   methods: {
     // 当页码发生改变的时候
     changeSize(size) {
-      console.log(size);
-      this.limit = size;
-      this.fetchData(1);
+      this.limit = size
+      this.fetchData(1)
     },
 
     addUser() {
@@ -131,31 +127,26 @@ export default {
 
     // 加载讲师列表数据
     fetchData(page = 1) {
-      console.log("翻页。。。" + page);
       // 异步获取远程数据（ajax）
-      this.userQueryDTO.current = page
-      this.userQueryDTO.size = this.limit
-      user
-        .getPageList(this.userQueryDTO)
-        .then((response) => {
-          this.list = response.data.records;
-          this.total = response.data.total;
+      this.userQueryDTO.current = page;
+      this.userQueryDTO.size = this.limit;
+      user.getPageList(this.userQueryDTO).then((response) => {
+        this.list = response.data.records;
+        this.total = response.data.total;
 
-          // 数据加载并绑定成功
-          this.listLoading = false;
-        });
+        // 数据加载并绑定成功
+        this.listLoading = false;
+      });
     },
 
     // 重置查询表单
     resetData() {
-      console.log("重置查询表单");
       this.userQueryDTO = {};
       this.fetchData();
     },
 
     // 根据id删除数据
     removeDataById(id) {
-      // debugger
       this.$confirm("此操作将永久删除该记录, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -164,7 +155,9 @@ export default {
         .then(() => {
           // promise
           // 点击确定，远程调用ajax
-          return user.removeById(id);
+          var ids = [];
+          ids.push(id);
+          return user.batchRemove(ids);
         })
         .then((response) => {
           this.fetchData(this.page);
@@ -185,15 +178,11 @@ export default {
 
     // 当表格复选框选项发生变化的时候触发
     handleSelectionChange(selection) {
-      console.log("handleSelectionChange......");
-      console.log(selection);
       this.multipleSelection = selection;
     },
 
     // 批量删除
     removeRows() {
-      console.log("removeRows......");
-
       if (this.multipleSelection.length === 0) {
         this.$message({
           type: "warning",
@@ -211,13 +200,12 @@ export default {
           // promise
           // 点击确定，远程调用ajax
           // 遍历selection，将id取出放入id列表
-          var idList = [];
+          var ids = [];
           this.multipleSelection.forEach((item) => {
-            idList.push(item.id);
-            // console.log(idList)
+            ids.push(item.id);
           });
           // 调用api
-          return user.removeRows(idList);
+          return user.batchRemove(ids);
         })
         .then((response) => {
           this.fetchData(this.page);
@@ -234,19 +222,6 @@ export default {
             message: "已取消删除",
           });
         });
-    },
-
-    // 执行搜索
-    // queryString：文本框中输入的值
-    // cb：一个函数
-    querySearch(queryString, cb) {
-      console.log(queryString);
-      console.log(cb);
-
-      // teacher.selectNameByKey(queryString).then(response => {
-      //   // 调用 callback 返回建议列表的数据
-      //   cb(response.data.items)
-      // })
     },
   },
 };

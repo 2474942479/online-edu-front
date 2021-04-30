@@ -2,7 +2,7 @@
   "name": "online-admin",
   "version": "3.8.0",
   "license": "MIT",
-  "description": "在线教育后台管理系统",
+  "description": "假老外后台管理系统",
   "author": "张淞淇",
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",

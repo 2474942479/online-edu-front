@@ -69,7 +69,7 @@ export default {
       console.log(response);
       this.$message({
         type: "success",
-        message: response.message,
+        message: "上传成功",
       })
       // 跳转到课程列表页面
         this.$router.push({ path: `/subject/list` });

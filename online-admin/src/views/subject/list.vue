@@ -4,7 +4,7 @@
 
     <el-tree
       empty-text="尚无课程分类信息，请添加"
-      ref="tree"
+      ref="subjectTree"
       :data="data"
       :props="defaultProps"
       :filter-node-method="filterNode"
@@ -35,7 +35,7 @@ export default {
 
   watch: {
     filterText(val) {
-      this.$refs.tree.filter(val);
+      this.$refs.subjectTree.filter(val);
     },
   },
 

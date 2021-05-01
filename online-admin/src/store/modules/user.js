@@ -44,14 +44,6 @@ const user = {
         })
       })
     },
-    // Login({ commit }) {
-    //   debugger
-    //   const data = {
-    //     'token': 'helen'
-    //   }
-    //   setToken(data.token)// 将token存储在cookie中
-    //   commit('SET_TOKEN', data.token)
-    // },
 
     // 获取用户信息
     async GetInfo({ commit, state }) {
@@ -81,35 +73,8 @@ const user = {
         })
       })
     },
-    // GetInfo({ commit }) {
-    //   debugger
-    //   const data = {
-    //     'roles': [
-    //       'admin'
-    //     ],
-    //     'name': 'helen',
-    //     'avatar': 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-5670helen3b4acafe.gif'
-    //   }
-    //   if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-    //     commit('SET_ROLES', data.roles)
-    //   }
-    //   commit('SET_NAME', data.name)
-    //   commit('SET_AVATAR', data.avatar)
-    // },
 
     // 登出
-    // LogOut({ commit, state }) {
-    //   return new Promise((resolve, reject) => {
-    //     logout(state.token).then(() => {
-    //       commit('SET_TOKEN', '')
-    //       commit('SET_ROLES', [])
-    //       removeToken()
-    //       resolve()
-    //     }).catch(error => {
-    //       reject(error)
-    //     })
-    //   })
-    // },
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
         logout(state.token).then(() => {

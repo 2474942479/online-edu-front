@@ -28,10 +28,6 @@
           登录
         </el-button>
       </el-form-item>
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: 111111</span>
-      </div>
     </el-form>
   </div>
 </template>
@@ -99,7 +95,7 @@ export default {
             this.loading = false
           })
         } else {
-          console.log('error submit!!')
+          console.log('格式验证未通过!')
           return false
         }
       })

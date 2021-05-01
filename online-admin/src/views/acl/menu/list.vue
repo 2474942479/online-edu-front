@@ -1,7 +1,5 @@
 <template>
   <div class="app-container">
-    <el-input v-model="filterText" placeholder="请输入关键字" style="margin-bottom:30px;" />
-
     <el-table
       :data="menuList"
       style="width: 100%;margin-bottom: 20px;"
@@ -150,12 +148,6 @@ export default {
       },
     };
   },
-  // 监听上面文本框搜索
-  watch: {
-    filterText(val) {
-      this.$refs.menuTree.filter(val);
-    },
-  },
 
   created() {
     SVGPoint;
@@ -163,6 +155,7 @@ export default {
   },
 
   methods: {
+
     fetchNodeList() {
       menu.getNestedTreeList().then((response) => {
         if (response.success === true) {
@@ -172,10 +165,7 @@ export default {
         }
       });
     },
-    filterNode(value, data) {
-      if (!value) return true;
-      return data.title.toLowerCase().indexOf(value.toLowerCase()) !== -1;
-    },
+    
     remove(data) {
       console.log(data);
 
@@ -209,6 +199,7 @@ export default {
           }
         });
     },
+
     appendPermission() {
       this.$refs.permission.validate((valid) => {
         if (valid) {
@@ -248,6 +239,7 @@ export default {
         }
       });
     },
+
     appendLevelOne() {
       menu
         .saveLevelOne(this.menu)
@@ -306,7 +298,6 @@ export default {
     },
 
     update(obj) {
-      debugger;
       menu.update(obj).then((response) => {
         this.dialogFormVisible = false;
         this.$message({
@@ -318,7 +309,7 @@ export default {
         this.restData();
       });
     },
-    
+
     getById(data) {
       this.dialogFormValue = "修改菜单";
       this.dialogFormVisible = true;
@@ -336,9 +327,7 @@ export default {
       this.dialogFormVisible = false;
       this.menu = { ...menuForm };
       this.permission = { ...perForm };
-    }
-
-  }
-  
+    },
+  },
 };
 </script>

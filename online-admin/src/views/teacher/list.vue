@@ -47,11 +47,10 @@
       highlight-current-row
       :row-class-name="tableRowClassName"
     >
-    
       <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
       <el-table-column label="讲师头像" width="100" align="center">
         <template slot-scope="scope">
-          <el-avatar :size="60" :src="scope.row.avatar" ></el-avatar>
+          <el-avatar :size="60" :src="scope.row.avatar"></el-avatar>
         </template>
       </el-table-column>
       <el-table-column prop="name" label="姓名" width="100" align="center"></el-table-column>
@@ -78,6 +77,9 @@
             icon="el-icon-edit"
             @click="getInfo(scope.row.id)"
           >编辑</el-button>
+
+          <!-- 编辑功能 -->
+
           <el-drawer
             :before-close="handleCloseForm"
             :visible.sync="dialog"
@@ -195,7 +197,7 @@
                   icon="el-icon-upload"
                   size="medium"
                   type="primary"
-                  @click="$refs.drawer.closeDrawer()"
+                  @click="update"
                   :loading="loading"
                 >{{ loading ? '提交中 ...' : '提交' }}</el-button>
               </div>
@@ -205,7 +207,7 @@
           <!-- 删除方式二 -->
           <el-popconfirm
             confirmButtonText="确认"
-            @onConfirm="removeTeacher(scope.row.id,scope.row.name)"
+            @confirm="removeTeacher(scope.row.id,scope.row.name)"
             cancelButtonText="取消"
             icon="el-icon-info"
             iconColor="red"
@@ -213,13 +215,6 @@
           >
             <el-button round type="danger" size="small" icon="el-icon-delete" slot="reference">删除</el-button>
           </el-popconfirm>
-          <!-- 删除方式一 -->
-          <!-- <el-button
-            type="danger"
-            size="mini"
-            icon="el-icon-delete"
-            @click="removeTeacher(scope.row.id,scope.row.name)"
-          >删除</el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -232,8 +227,8 @@
     -->
     <el-pagination
       :current-page="page"
-      :page-size="size" 
-      :total="total" 
+      :page-size="size"
+      :total="total"
       style="padding: 30px 0; text-align: center;"
       layout="total, prev, pager, next, jumper"
       @current-change="getList"
@@ -296,28 +291,24 @@ export default {
       return "";
     },
 
-    //创建具体的方法  调用api/teacher.js中定义的方法
+    // 创建具体的方法  调用api/teacher.js中定义的方法
+    handleCurrentChange(val) {
+      this.getList(val);
+    },
 
     // 讲师列表 page = 1 意思是page默认值为1 改变后 将page赋值给this.page 做到分页切换
     getList(page = 1) {
-      this.teacherQueryDTO.current = page
-      this.teacherQueryDTO.size = this.size
-      teacher
-        .getTeacherListPage(this.teacherQueryDTO)
-        .then((response) => {
-          //请求成功
-          this.listLoading = true;
-          // response是接口返回的数据
-          console.log(response);
-          this.list = response.data.records;
-          this.total = response.data.total;
-          this.listLoading = false;
-        });
+      this.teacherQueryDTO.current = page;
 
-      // request封装好了可以不写
-      // .catch((error) => {
-      //   console.log(error);
-      // });
+      this.teacherQueryDTO.size = this.size;
+      teacher.getTeacherListPage(this.teacherQueryDTO).then((response) => {
+        // 请求成功
+        this.listLoading = true;
+        this.page = response.data.current;
+        this.list = response.data.records;
+        this.total = response.data.total;
+        this.listLoading = false;
+      });
     },
 
     // 清空查询条件并刷新页面(重新查询)
@@ -325,38 +316,6 @@ export default {
       this.teacherQueryDTO = {};
       this.getList();
     },
-
-    // 删除方式一
-    // 通过ID删除讲师
-    // removeTeacher(id, name) {
-    //   //弹出提示框 确认是否删除
-    //   this.$confirm(`此操作将永久删除讲师${name}, 是否继续?`, "提示", {
-    //     confirmButtonText: "确定",
-    //     cancelButtonText: "取消",
-    //     type: "warning",
-    //   })
-    //     // 点击确定
-    //     .then(() => {
-    //       // 调用teacher.js中的删除方法
-    //       teacher.removeTeacherById(id).then((response) => {
-    //         //  删除成功
-    //         // 提示信息
-    //         this.$message({
-    //           type: "success",
-    //           message: "删除成功!",
-    //         });
-    //         // 刷新列表
-    //         this.getList();
-    //       });
-    //     })
-    //     // 点击取消
-    //     .catch(() => {
-    //       this.$message({
-    //         type: "info",
-    //         message: "已取消删除",
-    //       });
-    //     });
-    // },
 
     // 删除方式二
     removeTeacher(id, name) {
@@ -373,39 +332,42 @@ export default {
     // 编辑前查询
     getInfo(id) {
       teacher.getTeacherInfoById(id).then((response) => {
-        this.teacherInfo = response.data.info;
+        this.teacherInfo = response.data;
         this.dialog = true;
       });
     },
     // 编辑完成后提交
-    edit() {
-      teacher.uptateTeacher(this.teacherInfo).then((response) => {
-        // 1 提示修改成功
-        this.$message({
-          type: "success",
-          message: "修改成功!",
+    update() {
+      this.loading = true;
+      this.timer = setTimeout(() => {
+        teacher.uptateTeacher(this.teacherInfo).then((response) => {
+          // 1 提示修改成功
+          this.$message({
+            type: "success",
+            message: "修改成功!",
+          });
+          // 重新查询列表
+          this.getList();
         });
-        // 重新查询列表
-        this.getList();
-      });
+
+        // 动画关闭需要一定的时间
+        setTimeout(() => {
+          this.loading = false;
+          this.dialog = false;
+        }, 400);
+      }, 1000);
     },
 
     handleCloseForm() {
       if (this.loading) {
         return;
       }
-      this.$confirm("确定要提交表单吗？").then((_) => {
-        this.loading = true;
-        this.timer = setTimeout(() => {
-          this.edit();
-
-          // 动画关闭需要一定的时间
-          setTimeout(() => {
+      this.$confirm("还有未保存的工作哦确定关闭吗？")
+      .then((_) => {
             this.loading = false;
             this.dialog = false;
-          }, 400);
-        }, 1000);
-      });
+      })
+      .catch(_ => {});
     },
 
     // 关闭编辑框
@@ -450,12 +412,13 @@ export default {
       // 上传之后接口返回图片地址url
       this.teacherInfo.avatar = response.data.url;
       this.innerDrawer = false;
-      this.$refs.upload.clearFiles()
+      this.$refs.upload.clearFiles();
       this.$message({
         type: "success",
         message: "上传成功!",
       });
     },
+
     uploadFail() {
       this.$message({
         type: "error",

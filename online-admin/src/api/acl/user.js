@@ -8,9 +8,10 @@ export default {
     return request({
       url: `${api_name}/pageUser`,
       method: 'post',
-      data: userQueryDTO // url查询字符串或表单键值对
+      data: userQueryDTO
     })
   },
+  
   getById(id) {
     return request({
       url: `${api_name}/get/${id}`,
@@ -25,25 +26,29 @@ export default {
       data: user
     })
   },
+
   getAssign(userId) {
     return request({
-      url: `${api_name}/toAssign/${userId}`,
+      url: `${api_name}/getRoleInfo/${userId}`,
       method: 'get'
     })
   },
+
   saveAssign(userId, roleId) {
     return request({
-      url: `${api_name}/doAssign`,
+      url: `${api_name}/assignRole`,
       method: 'post',
       params: { userId, roleId }
     })
   },
+
   removeById(id) {
     return request({
       url: `${api_name}/remove/${id}`,
       method: 'delete'
     })
   },
+
   batchRemove(ids) {
     return request({
       url: `${api_name}/batchRemove`,

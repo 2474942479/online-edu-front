@@ -79,8 +79,7 @@ export default {
       imagecropperKey: 0,
       // 上传组件是否显示
       imagecropperShow: false,
-      teacherInfo: {
-      },
+      teacherInfo: {},
       saveBtnDisabled: false,
     };
   },
@@ -130,7 +129,7 @@ export default {
       });
     },
 
-    edit() {
+    update() {
       teacher.uptateTeacher(this.teacherInfo).then((response) => {
         // 1 提示修改成功
         this.$message({
@@ -149,7 +148,7 @@ export default {
       if (!this.teacherInfo.id) {
         this.add();
       } else {
-        this.edit();
+        this.update();
       }
     },
 

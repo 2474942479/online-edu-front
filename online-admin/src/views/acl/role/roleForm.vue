@@ -9,7 +9,7 @@
         highlight-current
         :props="defaultProps">
       </el-tree>
-    <el-button :disabled="saveBtnDisabled" type="primary" @click="save">保存</el-button>
+    <el-button :disabled="saveBtnDisabled" type="primary" @click="save" style="margin-left: 50%">保存</el-button>
   </div>
 </template>
 <script>

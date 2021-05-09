@@ -15,14 +15,13 @@
 
 import roleApi from '@/api/acl/role'
 
-const defaultForm = {
-  roleName: ''
-}
 
 export default {
   data() {
     return {
-      role: defaultForm,
+      role: {
+          roleName: ''
+        },
       saveBtnDisabled: false, // 保存按钮是否禁用,
       validateRules: {
         roleName: [{ required: true, trigger: 'blur', message: '角色名必须输入' }]
@@ -33,9 +32,6 @@ export default {
   // 监听器
   watch: {
     $route(to, from) {
-      console.log('路由变化......')
-      console.log(to)
-      console.log(from)
       this.init()
     }
   },
@@ -72,7 +68,6 @@ export default {
       })
     },
 
-    // 新增讲师
     saveData() {
       roleApi.save(this.role).then(response => {
         // debugger

@@ -45,7 +45,7 @@
           :width="300"
           :height="300"
           :key="imagecropperKey"
-          :url="BASE_API+'/eduOss/fileOss/uploadAvatar'"
+          :url="BASE_API+'/eduService/oss/upload2Oss'"
           field="file"
           @close="close"
           @crop-upload-success="cropSuccess"
@@ -162,7 +162,7 @@ export default {
     // 上传成功的方法  data是封装后的response.data
     cropSuccess(data) {
       // 上传之后接口返回图片地址url
-      this.teacherInfo.avatar = data.url;
+      this.teacherInfo.avatar = data;
       this.imagecropperShow = false;
       // 上传成功后，重新打开上传组件时初始化组件，否则显示上一次的上传结果
       this.imagecropperKey = this.imagecropperKey + 1;

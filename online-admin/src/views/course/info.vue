@@ -144,11 +144,11 @@ export default {
 
   created() {
     course.getAllTeacher().then((response) => {
-      this.teacherList = response.data.list;
+      this.teacherList = response.data;
     });
 
     subject.getAllList().then((response) => {
-      this.subjectList = response.data.list;
+      this.subjectList = response.data;
     });
 
     this.init();
@@ -165,8 +165,7 @@ export default {
     init() {
       // 根据路径判断是否有id值来决定是否进行数据回显 即区分修改和增加
       if (this.$route.params && this.$route.params.courseId) {
-        this.courseInfo.id = this.$route.params.courseId;
-        this.getCourseInfo();
+        this.getCourseInfo(this.$route.params.courseId);
       } else {
         this.courseInfo = {};
         this.subjectIdList = [];
@@ -195,6 +194,7 @@ export default {
     handleCoverSuccess(res) {
       this.courseInfo.cover = res.data.url;
     },
+
     beforeCoverUpload(file) {
       const isJPG =
         file.type === "image/jpeg" ||
@@ -208,6 +208,18 @@ export default {
         this.$message.error("上传头像图片大小不能超过 2MB!");
       }
       return isJPG && isLt2M;
+    },
+
+        // 根据课程id查询课程基本信息
+
+    getCourseInfo(courseId) {
+      course.getCourseInfoById(courseId).then((response) => {
+        this.courseInfo = response.data;
+        this.subjectIdList = [
+          response.data.subjectParentId,
+          response.data.subjectId,
+        ];
+      });
     },
 
     // 判断是添加还是修改
@@ -239,24 +251,12 @@ export default {
       });
     },
 
-    // 根据课程id查询课程基本信息
-
-    getCourseInfo() {
-      course.getCourseInfoVoById(this.courseInfo.id).then((response) => {
-        this.courseInfo = response.data.courseInfo;
-        this.subjectIdList = [
-          response.data.courseInfo.subjectParentId,
-          response.data.courseInfo.subjectId,
-        ];
-      });
-    },
-
     // 修改课程基本信息
     update() {
       // 将课程分类级联选择器回显的的subjectIDList中的值赋值给courseInfo
       this.courseInfo.subjectParentId = this.subjectIdList[0];
       this.courseInfo.subjectId = this.subjectIdList[1];
-      course.updateCourseInfoVo(this.courseInfo).then((response) => {
+      course.updateCourseInfo(this.courseInfo).then((response) => {
         // 提示修改成功
         this.$message({
           type: "success",

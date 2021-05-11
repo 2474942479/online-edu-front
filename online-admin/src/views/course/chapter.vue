@@ -181,14 +181,14 @@ export default {
     // 获取课程大纲全部信息
     getChapterVo() {
       chapter.getAllChapterVo(this.chapter.courseId).then((response) => {
-        this.chapterVo = response.data.chapterVoList;
+        this.chapterVo = response.data;
       });
     },
 
     // 编辑按钮回显
     editChapter(chapterId) {
       chapter.getChapter(chapterId).then((response) => {
-        this.chapter = response.data.chapter;
+        this.chapter = response.data;
       });
       this.dialogChapterFormVisible = true;
     },

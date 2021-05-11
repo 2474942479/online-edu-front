@@ -48,7 +48,7 @@
       :row-class-name="tableRowClassName"
     >
       <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
-      <el-table-column label="讲师头像" width="100" align="center">
+      <el-table-column label="讲师头像" width="100" height="300" align="center">
         <template slot-scope="scope">
           <el-avatar :size="60" :src="scope.row.avatar"></el-avatar>
         </template>
@@ -60,7 +60,12 @@
       </el-table-column>
       <el-table-column prop="career" label="讲师资历" width="150" align="center"></el-table-column>
 
-      <el-table-column prop="gmtCreate" label="加入时间" width="180" align="center"></el-table-column>
+      <el-table-column label="加入时间" width="180" align="center">
+        <template slot-scope="scope">
+        <i class="el-icon-time"></i>
+        <span style="margin-left: 10px">{{ scope.row.gmtCreate }}</span>
+      </template>
+      </el-table-column>
       <el-table-column prop="sort" label="排序" width="80" align="center"></el-table-column>
       <el-table-column prop="intro" label="讲师简介" width="803"></el-table-column>
       <el-table-column label="操作" width="200" align="center" fixed="right">
@@ -68,7 +73,7 @@
           <!-- 编辑方法一 -->
           <!-- <router-link :to="'/teacher/edit/'+scope.row.id">
             <el-button type="primary" size="mini" icon="el-icon-edit">编辑</el-button>
-          </router-link>-->
+          </router-link> -->
           <!-- 编辑方法二 -->
           <el-button
             round

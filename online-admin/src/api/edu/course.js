@@ -41,17 +41,17 @@ export default {
     
 
     // 通过课程id查询课程基本信息
-    getCourseInfoVoById(id){
+    getCourseInfoById(id){
         return request({
-            url:`/eduService/course/getCourseInfoVoById/${id}`,
+            url:`/eduService/course/getCourseInfoById/${id}`,
             method:"get"
         })
     },
 
     // 修改课程基本信息
-    updateCourseInfoVo(courseInfo){
+    updateCourseInfo(courseInfo){
         return request({
-            url:"/eduService/course/updateCourseInfoVo",
+            url:"/eduService/course/updateCourseInfo",
             method:"put",
             data:courseInfo
         })

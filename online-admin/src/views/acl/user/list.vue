@@ -45,7 +45,12 @@
 
       <el-table-column prop="nickName" label="用户昵称" align="center" />
 
-      <el-table-column prop="gmtCreate" label="创建时间" width="300" align="center" />
+      <el-table-column prop="gmtCreate" label="创建时间" width="300" align="center">
+      <template slot-scope="scope">
+        <i class="el-icon-time"></i>
+        <span style="margin-left: 10px">{{ scope.row.gmtCreate }}</span>
+      </template>
+      </el-table-column>
 
       <el-table-column label="操作" width="400" align="center">
         <template slot-scope="scope">

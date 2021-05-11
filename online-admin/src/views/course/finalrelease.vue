@@ -60,7 +60,7 @@ export default {
       finalrelease
         .getFinalRelease(this.courseInfo.id)
         .then((response) => {
-          this.finalreleaseInfo = response.data.finalReleaseVo;
+          this.finalreleaseInfo = response.data;
         });
     },
 

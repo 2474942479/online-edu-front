@@ -55,6 +55,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="title" label="课程标题" width="300" align="center"></el-table-column>
+      <el-table-column show-overflow-tooltip prop="description" label="课程简介" width="300" align="center"></el-table-column>
       <el-table-column label="发布状态" width="250" align="center">
         <!-- scope代表整个表格 scope.row 代表每行     ==判断值  ===判断类型和值 -->
         <template slot-scope="scope">{{scope.row.status==="Draft"?'未发布':'已发布'}}</template>
@@ -62,7 +63,12 @@
       <el-table-column prop="price" label="价格" width="200" align="center"></el-table-column>
       <el-table-column prop="reductionMoney" label="优惠" width="200" align="center"></el-table-column>
       <el-table-column prop="lessonNum" label="课时数" width="200" align="center"></el-table-column>
-      <el-table-column prop="gmtCreate" label="添加时间" width="250" align="center"></el-table-column>
+      <el-table-column label="添加时间" width="250" align="center">
+        <template slot-scope="scope">
+        <i class="el-icon-time"></i>
+        <span style="margin-left: 10px">{{ scope.row.gmtCreate }}</span>
+      </template>
+      </el-table-column>
       <el-table-column label="操作" width="250" align="center" fixed="right">
         <template slot-scope="scope">
           <!-- 编辑方法一 -->
@@ -73,7 +79,7 @@
           <!-- 删除方式二 -->
           <el-popconfirm
             confirmButtonText="确认"
-            @onConfirm="removeCourse(scope.row.id,scope.row.title)"
+            @confirm="removeCourse(scope.row.id,scope.row.title)"
             cancelButtonText="取消"
             icon="el-icon-info"
             iconColor="red"
@@ -176,7 +182,7 @@ export default {
         // 提示信息
         this.$message({
           type: "success",
-          message: "已成功删除" + title + "课程!",
+          message: "已成功删除 [ " + title + " ] 课程!",
         });
         // 刷新列表
         this.getList();

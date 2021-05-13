@@ -34,3 +34,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.el-menu{
+  width: 200px;
+}
+</style>

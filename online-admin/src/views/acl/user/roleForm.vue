@@ -67,9 +67,8 @@ export default {
         this.isIndeterminate = checkedCount > 0 && checkedCount < this.roleList.length;
       },
       update(){
-        this.saveBtnDisabled = true // 防止表单重复提交
+        this.saveBtnDisabled = true // 防止表单重复提交  
         var ids = this.assignRoleList.join(",")
-        console.log(ids)
         //修改权限
         userApi.saveAssign(this.userId, ids).then(response => {
             if(response.success){

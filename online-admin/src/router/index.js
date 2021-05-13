@@ -87,16 +87,10 @@ export const asyncRoutes = [
       {
         path: 'list',    //二级路径
         name: '课程分类列表',
-        component: () => import('@/views/subject/list.vue'),//该路由对应的页面
+        component: () => import('@/views/course/subject/list.vue'),//该路由对应的页面
         meta: { title: '课程分类列表', icon: 'tree' }
       },
 
-      {
-        path: 'save',
-        name: '导入课程分类',
-        component: () => import('@/views/subject/save.vue'),
-        meta: { title: '导入课程分类', icon: 'tree' }
-      }
     ]
   },
 
@@ -141,6 +135,12 @@ export const asyncRoutes = [
         meta: { title: '最终发布', icon: 'tree' },
         hidden: true
       },
+      {
+        path: '/course/subject/list',    
+        name: '课程分类列表',
+        component: () => import('@/views/course/subject/list.vue'),//该路由对应的页面
+        meta: { title: '课程分类列表', icon: 'tree' }
+      }
 
     ]
   },

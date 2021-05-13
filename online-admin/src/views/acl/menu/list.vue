@@ -12,6 +12,7 @@
       <el-table-column prop="path" label="访问路径" sortable align="center" width="300"></el-table-column>
       <el-table-column prop="component" label="组件路径" sortable align="center" width="300"></el-table-column>
       <el-table-column prop="permissionValue" align="center" label="权限值"></el-table-column>
+      <el-table-column prop="icon" align="center" label="图标值"></el-table-column>
       <el-table-column align="center" label="操作">
         <template slot-scope="scope">
           <!-- v-if="node.level == 1 || node.level == 2" v-if="node.level == 3" v-if="node.level == 4"-->
@@ -37,7 +38,7 @@
             v-if="scope.row.level != 4 &&  hasPerm('permission.update')"
             type="text"
             size="medium"
-            @click="() => getById(scope.row)"
+            @click="() => updateMenu(scope.row)"
           >修改</el-button>
           <el-button
             type="text"
@@ -60,10 +61,13 @@
         <el-form-item label="组件路径" prop="component">
           <el-input v-model="menu.component" />
         </el-form-item>
+        <el-form-item label="组件图标" prop="icon">
+          <el-input v-model="menu.icon" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="restData()">取 消</el-button>
-        <el-button type="primary" @click="append()">确 定</el-button>
+        <el-button type="primary" @click="appendMenu()">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 添加功能的窗口 -->
@@ -89,7 +93,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="restData()">取 消</el-button>
-        <el-button type="primary" @click="appendPermission()">确 定</el-button>
+        <el-button type="primary" @click="appendFunction()">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -102,8 +106,10 @@ const menuForm = {
   name: "",
   pid: 0,
   path: "",
+  icon:"",
   component: "",
   type: "1",
+  status: "1",
 };
 const perForm = {
   permissionValue: "",
@@ -112,6 +118,7 @@ const perForm = {
   path: "",
   component: "",
   pid: 0,
+  status: "1",
 };
 
 export default {
@@ -151,24 +158,17 @@ export default {
 
   created() {
     SVGPoint;
-    this.fetchNodeList();
+    this.initData();
   },
 
   methods: {
-
-    fetchNodeList() {
-      menu.getNestedTreeList().then((response) => {
-        if (response.success === true) {
-          console.log(response.data);
-          this.menuList = response.data;
-          console.log(this.menuList);
-        }
+    initData() {
+      menu.getAllPermission().then((response) => {
+        this.menuList = response.data;
       });
     },
-    
-    remove(data) {
-      console.log(data);
 
+    remove(data) {
       this.$confirm("此操作将永久删除该记录, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -177,61 +177,35 @@ export default {
         .then(() => {
           return menu.removeById(data.id);
         })
-        .then(() => {
-          this.fetchNodeList(); // 刷新列表
-          this.$message({
-            type: "success",
-            message: "删除成功!",
-          });
-        })
-        .catch((response) => {
-          // 失败
-          if (response === "cancel") {
+        .then((response) => {
+          if (response.success) {
+            this.initData(); // 刷新列表
             this.$message({
-              type: "info",
-              message: "已取消删除",
-            });
-          } else {
-            this.$message({
-              type: "error",
-              message: "删除失败",
+              type: "success",
+              message: "删除成功!",
             });
           }
         });
     },
 
-    appendPermission() {
+    appendFunction() {
       this.$refs.permission.validate((valid) => {
         if (valid) {
           if (this.permission.id) {
             this.update(this.permission);
           } else {
-            menu.saveLevelOne(this.permission).then((response) => {
-              this.dialogPermissionVisible = false;
-              this.$message({
-                type: "success",
-                message: "添加功能成功",
-              });
-              // 刷新页面
-              this.fetchNodeList();
-              this.menu = { ...menuForm };
-              this.permission = { ...perForm };
-            });
+            this.save(this.permission);
           }
         }
       });
     },
 
-    append() {
+    appendMenu() {
       this.$refs.menu.validate((valid) => {
         if (valid) {
           if (!this.menu.id) {
             // 添加
-            if (this.menu.pid == 0) {
-              this.appendLevelOne(); // 一级分类的添加
-            } else {
-              this.appendLevelTwo(); // 二级分类的添加
-            }
+            this.save(this.menu);
           } else {
             // 修改
             this.update(this.menu);
@@ -240,61 +214,17 @@ export default {
       });
     },
 
-    appendLevelOne() {
-      menu
-        .saveLevelOne(this.menu)
-        .then((response) => {
-          this.dialogFormVisible = false;
-          this.$message({
-            type: "success",
-            message: "添加一级菜单成功",
-          });
-          // 刷新页面
-          this.fetchNodeList();
-          this.menu = { ...menuForm };
-          this.permission = { ...perForm };
-        })
-        .catch((response) => {
-          // 失败
-          this.dialogFormVisible = false;
-          this.$message({
-            type: "error",
-            message: "添加一级菜单失败",
-          });
-          this.menu = { ...menuForm };
-          this.permission = { ...perForm };
+    save(obj) {
+      menu.save(obj).then((response) => {
+        this.dialogFormVisible = false;
+        this.$message({
+          type: "success",
+          message: "添加成功",
         });
-    },
-
-    appendLevelTwo() {
-      menu
-        .saveLevelOne(this.menu)
-        .then((response) => {
-          // 1、把文本框关
-          this.dialogFormVisible = false;
-          // 2、提示成功
-          this.$message({
-            type: "success",
-            message: "添加二级分类成功",
-          });
-          // 3、刷新页面
-          this.fetchNodeList();
-          // 4、把menu清空
-          this.menu = { ...menuForm };
-          this.permission = { ...perForm };
-        })
-        .catch((response) => {
-          // 1、把文本框关
-          this.dialogFormVisible = false;
-          // 2、提示失败
-          this.$message({
-            type: "error",
-            message: "添加二级分类失败",
-          });
-          // 3、把menu清空
-          this.menu = { ...menuForm };
-          this.permission = { ...perForm };
-        });
+        // 刷新页面
+        this.initData();
+        this.restData();
+      });
     },
 
     update(obj) {
@@ -305,12 +235,12 @@ export default {
           message: "修改成功",
         });
         // 刷新页面
-        this.fetchNodeList();
+        this.initData();
         this.restData();
       });
     },
 
-    getById(data) {
+    updateMenu(data) {
       this.dialogFormValue = "修改菜单";
       this.dialogFormVisible = true;
       this.menu = data;

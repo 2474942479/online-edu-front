@@ -49,27 +49,27 @@
       :row-class-name="tableRowClassName"
     >
       <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
-      <el-table-column label="课程封面" width="200px" height="200px" align="center">
+      <el-table-column label="课程封面" width="300px" height="300px" align="center">
         <template slot-scope="scope">
           <el-image  :src="scope.row.cover" fit="scale-down"></el-image>
         </template>
       </el-table-column>
-      <el-table-column prop="title" label="课程标题" width="300" align="center"></el-table-column>
-      <el-table-column show-overflow-tooltip prop="description" label="课程简介" width="300" align="center"></el-table-column>
-      <el-table-column label="发布状态" width="250" align="center">
+      <el-table-column prop="title" label="课程标题" width="150" align="center"></el-table-column>
+      <el-table-column show-overflow-tooltip prop="description" label="课程简介" width="250" align="center"></el-table-column>
+      <el-table-column label="发布状态" width="150" align="center">
         <!-- scope代表整个表格 scope.row 代表每行     ==判断值  ===判断类型和值 -->
         <template slot-scope="scope">{{scope.row.status==="Draft"?'未发布':'已发布'}}</template>
       </el-table-column>
-      <el-table-column prop="price" label="价格" width="200" align="center"></el-table-column>
-      <el-table-column prop="reductionMoney" label="优惠" width="200" align="center"></el-table-column>
-      <el-table-column prop="lessonNum" label="课时数" width="200" align="center"></el-table-column>
+      <el-table-column prop="price" label="价格" width="100" align="center"></el-table-column>
+      <el-table-column prop="reductionMoney" label="优惠" width="100" align="center"></el-table-column>
+      <el-table-column prop="lessonNum" label="课时数" width="100" align="center"></el-table-column>
       <el-table-column label="添加时间" width="250" align="center">
         <template slot-scope="scope">
         <i class="el-icon-time"></i>
         <span style="margin-left: 10px">{{ scope.row.gmtCreate }}</span>
       </template>
       </el-table-column>
-      <el-table-column label="操作" width="250" align="center" fixed="right">
+      <el-table-column label="操作" width="150" align="center" fixed="right">
         <template slot-scope="scope">
           <!-- 编辑方法一 -->
           <router-link :to="'/course/info/'+scope.row.id">

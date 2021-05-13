@@ -6,7 +6,7 @@
       <el-step title="创建课程大纲" />
       <el-step title="最终发布" />
     </el-steps>
-    <el-form label-width="120px">
+    <el-form label-width="120px" >
       <el-form-item label="课程标题" style="width:650px">
         <el-input v-model="courseInfo.title" placeholder=" 示例：机器学习项目课。专业名称注意大小写" />
       </el-form-item>
@@ -47,13 +47,13 @@
         <el-input
           type="textarea"
           v-model="courseInfo.description"
-          placeholder=" 示例：机器学习项目课：从基础到搭建项目视频课程。"
+          placeholder=" 示例：全程外教一对一教学，在原有学校课堂的基础上，更快速的巩固和提高孩子的英语听说读写综合能力。"
         />
       </el-form-item>
 
       <el-form-item label="课程价格">
         <el-input-number
-          placeholder="免费课程请设置为0元"
+          placeholder="价格默认为0元"
           size="medium"
           :min="0"
           v-model="courseInfo.price"
@@ -62,7 +62,7 @@
       </el-form-item>
       <el-form-item label="课程优惠">
         <el-input-number
-          placeholder="无优惠请设置为0元"
+          placeholder="优惠默认为0元"
           size="medium"
           :min="0"
           v-model="courseInfo.reductionMoney"
@@ -85,7 +85,7 @@
           :width="300"
           :height="300"
           :key="imagecropperKey"
-          :url="BASE_API+'/eduOss/fileOss/uploadAvatar'"
+          :url="BASE_API+'/eduService/oss/upload2Oss'"
           field="file"
           @close="close"
           @crop-upload-success="cropSuccess"
@@ -184,7 +184,7 @@ export default {
     // 上传成功的方法  data是封装后的response.data
     cropSuccess(data) {
       // 上传之后接口返回图片地址url
-      this.courseInfo.cover = data.url;
+      this.courseInfo.cover = data;
       this.imagecropperShow = false;
       // 上传成功后，重新打开上传组件时初始化组件，否则显示上一次的上传结果
       this.imagecropperKey = this.imagecropperKey + 1;
@@ -246,7 +246,7 @@ export default {
         });
         // 跳转到下一步 并带上课程id
         this.$router.push({
-          path: `/course/chapter/${response.data.id}`,
+          path: `/course/chapter/${response.data}`,
         });
       });
     },

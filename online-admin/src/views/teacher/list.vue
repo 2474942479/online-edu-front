@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <h1>讲师列表</h1>
+    <h1>外教列表</h1>
     <!-- 条件查询表单 -->
     <el-form :inline="true" :model="teacherQueryDTO" class="demo-form-inline">
       <el-form-item label="姓名">
@@ -48,7 +48,7 @@
       :row-class-name="tableRowClassName"
     >
       <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
-      <el-table-column label="讲师头像" width="100" height="300" align="center">
+      <el-table-column label="头像" width="100" height="300" align="center">
         <template slot-scope="scope">
           <el-avatar :size="60" :src="scope.row.avatar"></el-avatar>
         </template>
@@ -58,7 +58,7 @@
         <!-- scope代表整个表格 scope.row 代表每行     ==判断值  ===判断类型和值 -->
         <template slot-scope="scope">{{scope.row.level===1?'高级讲师':'首席讲师'}}</template>
       </el-table-column>
-      <el-table-column prop="career" label="讲师资历" width="150" align="center"></el-table-column>
+      <el-table-column prop="career" label="资历" width="150" align="center"></el-table-column>
 
       <el-table-column label="加入时间" width="180" align="center">
         <template slot-scope="scope">
@@ -67,7 +67,7 @@
       </template>
       </el-table-column>
       <el-table-column prop="sort" label="排序" width="80" align="center"></el-table-column>
-      <el-table-column prop="intro" label="讲师简介" width="803"></el-table-column>
+      <el-table-column prop="intro" label="简介" width="653"></el-table-column>
       <el-table-column label="操作" width="200" align="center" fixed="right">
         <template slot-scope="scope">
           <!-- 编辑方法一 -->
@@ -84,7 +84,6 @@
           >编辑</el-button>
 
           <!-- 编辑功能 -->
-
           <el-drawer
             :before-close="handleCloseForm"
             :visible.sync="dialog"
@@ -95,7 +94,7 @@
             :append-to-body="true"
             style="text-align: center;"
           >
-            <h1>编辑讲师</h1>
+            <h1>编辑信息</h1>
             <div class="demo-drawer__content">
               <el-form :model="teacherInfo">
                 <el-form-item label="讲师名称" :label-width="formLabelWidth" style=" font-size: 15px">
@@ -169,7 +168,7 @@
                         <el-upload
                           ref="upload"
                           :drag="true"
-                          :action="BASE_API+'/eduOss/fileOss/uploadAvatar'"
+                          :action="BASE_API+'/eduService/oss/upload2Oss'"
                           :multiple="false"
                           :on-success="uploadSuccess"
                           :on-error="uploadFail"
@@ -415,7 +414,7 @@ export default {
     // 上传成功的方法  data是封装后的response.data
     uploadSuccess(response) {
       // 上传之后接口返回图片地址url
-      this.teacherInfo.avatar = response.data.url;
+      this.teacherInfo.avatar = response.data;
       this.innerDrawer = false;
       this.$refs.upload.clearFiles();
       this.$message({

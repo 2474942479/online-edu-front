@@ -11,7 +11,7 @@
       <el-radio v-model="courseInfo.status" label="Normal">发布</el-radio>
     </div>
     <div class="ccInfo">
-      <img :src="finalreleaseInfo.cover" />
+      <img :src="finalreleaseInfo.cover" height="100%" width="100%"/>
       <div class="main">
         <h2>{{ finalreleaseInfo.title }}</h2>
         <p class="gray">

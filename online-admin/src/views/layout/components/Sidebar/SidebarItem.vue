@@ -4,14 +4,16 @@
     <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
       <app-link :to="resolvePath(onlyOneChild.path)">
         <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
-          <item v-if="onlyOneChild.meta" :icon="onlyOneChild.meta.icon||item.meta.icon" :title="onlyOneChild.meta.title" />
+          <i :class="item.meta.icon? item.meta.icon : ''"></i>
+          <item v-if="onlyOneChild.meta" :title="onlyOneChild.meta.title" />
         </el-menu-item>
       </app-link>
     </template>
 
     <el-submenu v-else :index="resolvePath(item.path)">
       <template slot="title">
-        <item v-if="item.meta" :icon="item.meta.icon" :title="item.meta.title" />
+        <i :class="item.meta.icon? item.meta.icon : ''"></i>
+        <item v-if="item.meta" :title="item.meta.title" />
       </template>
 
       <template v-for="child in item.children" v-if="!child.hidden">
@@ -24,7 +26,7 @@
           class="nest-menu" />
         <app-link v-else :to="resolvePath(child.path)" :key="child.name">
           <el-menu-item :index="resolvePath(child.path)">
-            <item v-if="child.meta" :icon="child.meta.icon" :title="child.meta.title" />
+            <item v-if="child.meta" :title="child.meta.title" />{{child.meta.icon}}
           </el-menu-item>
         </app-link>
       </template>
@@ -61,6 +63,9 @@ export default {
     return {
       onlyOneChild: null
     }
+  },
+  mounted() {
+    console.log(this.item, "12");
   },
   methods: {
     hasOneShowingChild(children, parent) {

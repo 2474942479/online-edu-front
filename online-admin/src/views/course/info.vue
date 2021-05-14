@@ -6,7 +6,7 @@
       <el-step title="创建课程大纲" />
       <el-step title="最终发布" />
     </el-steps>
-    <el-form label-width="120px" >
+    <el-form label-width="120px">
       <el-form-item label="课程标题" style="width:650px">
         <el-input v-model="courseInfo.title" placeholder=" 示例：机器学习项目课。专业名称注意大小写" />
       </el-form-item>
@@ -71,16 +71,16 @@
       </el-form-item>
       <el-form-item label="课程封面">
         <!-- 头像缩略图 -->
-        <pan-thumb :image="courseInfo.cover" />
+        <!-- <pan-thumb :image="courseInfo.cover" /> -->
         <!-- 文件上传按钮 -->
-        <el-button round type="primary" icon="el-icon-upload" @click="imagecropperShow=true">添加封面</el-button>
+        <!-- <el-button round type="primary" icon="el-icon-upload" @click="imagecropperShow=true">添加封面</el-button> -->
         <!-- v-show：是否显示上传组件
                   :key：类似于id，如果一个页面多个图片上传控件，可以做区分
                   :url：后台上传的url地址
                   @close：关闭上传组件
                   @crop-upload-success：上传成功后的回调 
         -->
-        <image-cropper
+        <!-- <image-cropper
           v-show="imagecropperShow"
           :width="300"
           :height="300"
@@ -89,7 +89,28 @@
           field="file"
           @close="close"
           @crop-upload-success="cropSuccess"
-        />
+        />-->
+        <el-upload 
+        :action="BASE_API+'/eduService/oss/upload2Oss'" 
+        list-type="picture-card" 
+        :auto-upload="true" 
+        :limit="1"
+        :on-success="cropSuccess" 
+        :before-upload="beforeCoverUpload"
+        >
+          <i slot="default" class="el-icon-plus"></i>
+          <div slot="file" slot-scope="{file}">
+            <img class="el-upload-list__item-thumbnail" :src="courseInfo.cover" alt />
+            <span class="el-upload-list__item-actions">
+              <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file)">
+                <i class="el-icon-zoom-in"></i>
+              </span>
+            </span>
+          </div>
+        </el-upload>
+        <el-dialog :visible.sync="dialogVisible">
+          <img width="100%" :src="dialogImageUrl" alt />
+        </el-dialog>
       </el-form-item>
 
       <el-form-item style="margin-top:30px;text-align: center;">
@@ -114,6 +135,10 @@ export default {
   components: { ImageCropper, PanThumb },
   data() {
     return {
+      dialogImageUrl: "",
+      dialogVisible: false,
+      disabled: false,
+
       // 上传组件key的值 (唯一标识)
       imagecropperKey: 0,
       // 上传组件是否显示
@@ -181,13 +206,19 @@ export default {
       this.imagecropperKey = this.imagecropperKey + 1;
     },
 
-    // 上传成功的方法  data是封装后的response.data
-    cropSuccess(data) {
+    // 上传成功的方法
+    cropSuccess(response) {
       // 上传之后接口返回图片地址url
-      this.courseInfo.cover = data;
-      this.imagecropperShow = false;
+      this.courseInfo.cover = response.data;
+      if (response.success) {
+            this.$message({
+              type: "success",
+              message: "上传成功!",
+            });
+          }
+      // this.imagecropperShow = false;
       // 上传成功后，重新打开上传组件时初始化组件，否则显示上一次的上传结果
-      this.imagecropperKey = this.imagecropperKey + 1;
+      // this.imagecropperKey = this.imagecropperKey + 1;
     },
 
     // 课程封面
@@ -210,7 +241,7 @@ export default {
       return isJPG && isLt2M;
     },
 
-        // 根据课程id查询课程基本信息
+    // 根据课程id查询课程基本信息
 
     getCourseInfo(courseId) {
       course.getCourseInfoById(courseId).then((response) => {
@@ -268,6 +299,13 @@ export default {
         });
       });
     },
+
+    // 封面上传
+
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.response.data;
+      this.dialogVisible = true;
+    }
   },
 };
 </script>

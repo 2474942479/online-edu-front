@@ -165,7 +165,7 @@ export default {
   created() {
     if (this.$route.params && this.$route.params.courseId) {
       this.chapter.courseId = this.$route.params.courseId;
-      this.getChapterVo();
+      this.getChapterVO();
     }
   },
 
@@ -179,7 +179,7 @@ export default {
     },
 
     // 获取课程大纲全部信息
-    getChapterVo() {
+    getChapterVO() {
       chapter.getAllChapterVo(this.chapter.courseId).then((response) => {
         this.chapterVo = response.data;
       });

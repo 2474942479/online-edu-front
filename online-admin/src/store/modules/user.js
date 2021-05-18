@@ -33,11 +33,10 @@ const user = {
     Login({ commit }, userInfo) {
       const username = userInfo.username.trim()
       return new Promise((resolve, reject) => {
-        login(username, userInfo.password).then(response => { 
-          const data = response.data
-          setToken(data.token)
-          commit('SET_TOKEN', data.token)
-          console.log(data.token)
+        login(username, userInfo.password).then(response => {
+          setToken(response.data)
+          commit('SET_TOKEN', response.data)
+          console.log("token:",response.data)
           resolve()
         }).catch(error => {
           reject(error)
@@ -51,12 +50,12 @@ const user = {
         getInfo(state.token).then(response => {
           // debugger
           const data = response.data
-          console.log(data)
+          console.log("userINfo:",data)
           if (data.roleNameList && data.roleNameList.length > 0) { // 验证返回的roles是否是一个非空数组
             commit('SET_ROLES', data.roleNameList)
             //console.log(data.roles)
           } else {
-            reject('getInfo: roles must be a non-null array !')
+            reject('无权查看,请管理员授权后登陆 !')
           }
 
           const buttonAuthList = []
@@ -69,7 +68,8 @@ const user = {
           commit('SET_BUTTONS', buttonAuthList)
           resolve(response)
         }).catch(error => {
-          reject(error)
+          console.log("error:", error)
+          reject("获取用户失败")
         })
       })
     },

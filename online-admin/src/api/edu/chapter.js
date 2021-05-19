@@ -36,9 +36,9 @@ export default {
     },
 
     //查询所有的课程分类列表
-    getAllChapterVo(courseId) {
+    getAllChapterVO(courseId) {
         return request({
-            url: `/eduService/chapter/getAllChapterVo/${courseId}`,
+            url: `/eduService/chapter/getAllChapterVO/${courseId}`,
             method: 'get',
         })
     }

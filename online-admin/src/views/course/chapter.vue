@@ -180,7 +180,7 @@ export default {
 
     // 获取课程大纲全部信息
     getChapterVO() {
-      chapter.getAllChapterVo(this.chapter.courseId).then((response) => {
+      chapter.getAllChapterVO(this.chapter.courseId).then((response) => {
         this.chapterVo = response.data;
       });
     },

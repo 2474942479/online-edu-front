@@ -90,20 +90,35 @@
           @close="close"
           @crop-upload-success="cropSuccess"
         />-->
-        <el-upload 
-        :action="BASE_API+'/eduService/oss/upload2Oss'" 
-        list-type="picture-card" 
-        :auto-upload="true" 
-        :limit="1"
-        :on-success="cropSuccess" 
-        :before-upload="beforeCoverUpload"
+        <el-upload
+          :action="BASE_API+'/eduService/oss/upload2Oss'"
+          list-type="picture-card"
+          :auto-upload="true"
+          :limit="1"
+          :on-success="cropSuccess"
+          :before-upload="beforeCoverUpload"
+          :file-list="imgFilesList"
         >
           <i slot="default" class="el-icon-plus"></i>
           <div slot="file" slot-scope="{file}">
             <img class="el-upload-list__item-thumbnail" :src="courseInfo.cover" alt />
             <span class="el-upload-list__item-actions">
-              <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file)">
+              <span class="el-upload-list__item-preview" @click="imgPreview(file)">
                 <i class="el-icon-zoom-in"></i>
+              </span>
+              <span
+                v-if="!disabled"
+                class="el-upload-list__item-delete"
+                @click="imgDownload(file)"
+              >
+                <i class="el-icon-download"></i>
+              </span>
+              <span
+                v-if="!disabled"
+                class="el-upload-list__item-delete"
+                @click="imgRemove(file)"
+              >
+                <i class="el-icon-delete"></i>
               </span>
             </span>
           </div>
@@ -149,6 +164,7 @@ export default {
       teacherList: [],
       subjectList: [],
       subjectIdList: [],
+      imgFilesList: [],
       defaultProps: {
         children: "children",
         label: "title",
@@ -158,8 +174,7 @@ export default {
       courseInfo: {
         id: "",
         title: "",
-        subjectId: "",
-        subjectParentId: "",
+        subjectIds: "",
         teacherId: "",
         description: "",
         cover: "",
@@ -211,11 +226,11 @@ export default {
       // 上传之后接口返回图片地址url
       this.courseInfo.cover = response.data;
       if (response.success) {
-            this.$message({
-              type: "success",
-              message: "上传成功!",
-            });
-          }
+        this.$message({
+          type: "success",
+          message: "上传成功!",
+        });
+      }
       // this.imagecropperShow = false;
       // 上传成功后，重新打开上传组件时初始化组件，否则显示上一次的上传结果
       // this.imagecropperKey = this.imagecropperKey + 1;
@@ -246,10 +261,12 @@ export default {
     getCourseInfo(courseId) {
       course.getCourseInfoById(courseId).then((response) => {
         this.courseInfo = response.data;
-        this.subjectIdList = [
-          response.data.subjectParentId,
-          response.data.subjectId,
-        ];
+        this.subjectIdList = JSON.parse(response.data.subjectIds);
+        this.imgFilesList.push({
+          url: response.data.cover,
+          name: response.data.title,
+          id: response.data.id,
+        });
       });
     },
 
@@ -264,11 +281,7 @@ export default {
 
     // 添加课程基本信息
     save() {
-      // 将课程分类级联选择器回显的的subjectIDList中的值赋值给courseInfo
-      this.courseInfo.subjectParentId = this.subjectIdList[0];
-      this.courseInfo.subjectId = this.subjectIdList[1];
-      // 提交到服务器保存
-
+      this.courseInfo.subjectIds = JSON.stringify(this.subjectIdList);
       course.addCourseInfo(this.courseInfo).then((response) => {
         // 提示添加成功
         this.$message({
@@ -284,9 +297,8 @@ export default {
 
     // 修改课程基本信息
     update() {
+      this.courseInfo.subjectIds = JSON.stringify(this.subjectIdList);
       // 将课程分类级联选择器回显的的subjectIDList中的值赋值给courseInfo
-      this.courseInfo.subjectParentId = this.subjectIdList[0];
-      this.courseInfo.subjectId = this.subjectIdList[1];
       course.updateCourseInfo(this.courseInfo).then((response) => {
         // 提示修改成功
         this.$message({
@@ -300,12 +312,21 @@ export default {
       });
     },
 
-    // 封面上传
-
-    handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.response.data;
+    // 封面预览
+    imgPreview(file) {
+      this.dialogImageUrl = file.url;
       this.dialogVisible = true;
+    },
+
+    imgDownload(file) {
+
+    },
+
+    imgRemove(file) {
+      
     }
+
+
   },
 };
 </script>

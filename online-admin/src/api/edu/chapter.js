@@ -3,33 +3,25 @@ import request from '@/utils/request'
 export default {
 
 
-    saveChapter(chapter) {
+    saveOrUpdateChapter(chapterDTO) {
         return request({
-            url: `/eduService/chapter/saveChapter`,
+            url: `/eduService/chapter/saveOrUpdateChapter`,
             method: "post",
-            data: chapter
-
+            data: chapterDTO
         })
 
     },
     getChapter(chapterId) {
         return request({
-            url: `/eduService/chapter/getChapter/${chapterId}`,
+            url: `/eduService/chapter/getChapterInfo/${chapterId}`,
             method: "get"
         })
 
     },
-    updateChapter(chapter) {
-        return request({
-            url: `/eduService/chapter/updateChapter`,
-            method: "put",
-            data: chapter
-        })
 
-    },
-    deleteChapter(chapterId) {
+    removeChapter(chapterId) {
         return request({
-            url: `/eduService/chapter/${chapterId}`,
+            url: `/eduService/chapter/removeChapter/${chapterId}`,
             method:"delete"
         })
 

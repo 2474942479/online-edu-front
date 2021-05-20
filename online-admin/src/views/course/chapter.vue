@@ -13,24 +13,27 @@
       <el-form-item style="text-align: right;">
         <el-button type="primary" icon="el-icon-plus" @click="openChapterDialog">添加章节</el-button>
         <!-- 添加和修改章节表单 -->
-        <el-dialog title="添加章节" :visible.sync="dialogChapterFormVisible" width="700px" center>
-          <el-form :model="chapter" label-width="120px">
+        <el-dialog title="章节详情" :visible.sync="dialogChapterFormVisible" width="700px" center>
+          <el-form :model="chapterInfo" label-width="120px">
             <el-form-item label="章节标题" style="width:500px; margin-bottom: 30px">
-              <el-input v-model="chapter.title" />
+              <el-input v-model="chapterInfo.title" />
+            </el-form-item>
+            <el-form-item label="章节简介" style="width:500px; margin-bottom: 30px">
+              <el-input v-model="chapterInfo.description" type="textarea" />
             </el-form-item>
             <el-form-item label="章节排序">
-              <el-input-number v-model="chapter.sort" :min="1" placeholder></el-input-number>
+              <el-input-number v-model="chapterInfo.sort" :min="1" placeholder></el-input-number>
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
             <el-button @click="dialogChapterFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="addOrEdit">确 定</el-button>
+            <el-button type="primary" @click="saveOrUpdateChapter">确 定</el-button>
           </div>
         </el-dialog>
       </el-form-item>
       <el-form-item>
         <ul class="chapterList">
-          <li v-for="chapter in chapterVo" :key="chapter.id">
+          <li v-for="chapter in chapterVO" :key="chapter.id">
             <p>
               {{ chapter.title }}
               <span class="acts">
@@ -48,7 +51,7 @@
                 >编辑</el-button>
                 <el-popconfirm
                   confirmButtonText="确认"
-                  @onConfirm="removeChapter(chapter.id,chapter.title)"
+                  @confirm="removeChapter(chapter.id,chapter.title)"
                   cancelButtonText="取消"
                   icon="el-icon-info"
                   iconColor="red"
@@ -60,7 +63,7 @@
             </p>
             <!-- 小节 -->
             <ul class="chapterList videoList">
-              <li v-for="video in chapter.children" :key="video.id">
+              <li v-for="video in chapter.videoVOList" :key="video.id">
                 <p>
                   {{ video.title }}
                   <span class="acts">
@@ -72,7 +75,7 @@
                     >编辑</el-button>
                     <el-popconfirm
                       confirmButtonText="确认"
-                      @onConfirm="removeVideo(video.id,video.title)"
+                      @confirm="removeVideo(video.id,video.title)"
                       cancelButtonText="取消"
                       icon="el-icon-info"
                       iconColor="red"
@@ -88,10 +91,13 @@
         </ul>
 
         <!-- 添加和修改课时表单 -->
-        <el-dialog :visible.sync="dialogVideoFormVisible" title="添加课时" center>
+        <el-dialog :visible.sync="dialogVideoFormVisible" title="课时详情" center>
           <el-form :model="videoInfo" label-width="120px">
             <el-form-item label="课时标题" style="margin-bottom: 20px">
               <el-input v-model="videoInfo.title" />
+            </el-form-item>
+            <el-form-item label="章节简介" style="margin-bottom: 20px">
+              <el-input v-model="videoInfo.description" type="textarea" />
             </el-form-item>
             <el-form-item label="课时排序" style="margin-bottom: 20px">
               <el-input-number v-model="videoInfo.sort" :min="0" controls-position="right" />
@@ -109,7 +115,7 @@
                 :before-remove="beforeRemoveVod"
                 :on-exceed="handleUploadExceed"
                 :file-list="fileList"
-                :action="BASE_API+'/eduVod/video/uploadVideo'"
+                :action="BASE_API+'/eduService/vod/uploadVideo'"
                 :limit="1"
                 class="upload-demo"
               >
@@ -129,7 +135,11 @@
           </el-form>
           <div slot="footer" class="dialog-footer">
             <el-button @click="dialogVideoFormVisible = false">取 消</el-button>
-            <el-button :disabled="saveVideoBtnDisabled" type="primary" @click="addOrUpdateVideo">确 定</el-button>
+            <el-button
+              :disabled="saveVideoBtnDisabled"
+              type="primary"
+              @click="saveOrUpdateVideo"
+            >确 定</el-button>
           </div>
         </el-dialog>
       </el-form-item>
@@ -152,19 +162,15 @@ export default {
       dialogVideoFormVisible: false,
       saveBtnDisabled: false, // 保存按钮是否禁用
       saveVideoBtnDisabled: false,
-      chapterVo: [], //课程大纲（包含章节小节）
-      chapter: {
-        courseId: "",
-        title: "",
-        sort: "",
-      },
+      chapterVO: [], //课程大纲（包含章节小节）
+      chapterInfo: {},
       videoInfo: {},
     };
   },
 
   created() {
     if (this.$route.params && this.$route.params.courseId) {
-      this.chapter.courseId = this.$route.params.courseId;
+      this.chapterInfo.courseId = this.$route.params.courseId;
       this.getChapterVO();
     }
   },
@@ -174,80 +180,57 @@ export default {
 
     //  点击添加章节按钮时清空弹出框
     openChapterDialog() {
-      this.chapter = { courseId: this.$route.params.courseId };
+      this.chapterInfo = { courseId: this.$route.params.courseId };
       this.dialogChapterFormVisible = true;
     },
 
     // 获取课程大纲全部信息
     getChapterVO() {
-      chapter.getAllChapterVO(this.chapter.courseId).then((response) => {
-        this.chapterVo = response.data;
+      chapter.getAllChapterVO(this.chapterInfo.courseId).then((response) => {
+        this.chapterVO = response.data;
       });
     },
 
     // 编辑按钮回显
     editChapter(chapterId) {
       chapter.getChapter(chapterId).then((response) => {
-        this.chapter = response.data;
+        this.chapterInfo = response.data;
       });
       this.dialogChapterFormVisible = true;
     },
 
-    // 判断弹出框是添加提交还是编辑提交
-    addOrEdit() {
-      // 根据chapter中是否有id这个字段判断是修改还是添加
-      // 有id字段代表修改  无代表添加（添加会自动生成id）
-      if (!this.chapter.id) {
-        this.addChapter();
-      } else {
-        this.updateChapter();
-      }
-    },
-
-    // 添加提交
-    addChapter() {
-      chapter.saveChapter(this.chapter).then((response) => {
+    // 添加或修改
+    saveOrUpdateChapter() {
+      chapter.saveOrUpdateChapter(this.chapterInfo).then((response) => {
         this.dialogChapterFormVisible = false;
         this.$message({
           type: "success",
-          message: "添加成功",
+          message: "操作成功",
         });
-        this.getChapterVo();
-      });
-    },
-
-    // 修改提交
-    updateChapter() {
-      chapter.updateChapter(this.chapter).then((response) => {
-        this.dialogChapterFormVisible = false;
-        this.$message({
-          type: "success",
-          message: "修改成功",
-        });
-        this.getChapterVo();
+        this.getChapterVO();
       });
     },
 
     removeChapter(chapterId, title) {
-      chapter.deleteChapter(chapterId).then((response) => {
+      chapter.removeChapter(chapterId).then((response) => {
         // 提示信息
         this.$message({
           type: "success",
           message: "已成功删除章节" + title + "!",
         });
-        this.getChapterVo();
+        this.getChapterVO();
       });
     },
 
     previous() {
       // 跳转到上一步 并带上课程id
-      this.$router.push({ path: `/course/info/${this.chapter.courseId}` });
+      this.$router.push({ path: `/course/info/${this.chapterInfo.courseId}` });
     },
 
     next() {
       // 跳转到第二步 并带上课程id
       this.$router.push({
-        path: `/course/finalrelease/${this.chapter.courseId}`,
+        path: `/course/finalrelease/${this.chapterInfo.courseId}`,
       });
     },
 
@@ -255,7 +238,7 @@ export default {
 
     // 根据章节id添加小节到对应章节下
     openVideoDialog(chapterId) {
-      this.fileList=[]
+      this.fileList = [];
       this.videoInfo = {
         courseId: this.$route.params.courseId,
         chapterId: chapterId,
@@ -263,51 +246,28 @@ export default {
       this.dialogVideoFormVisible = true;
     },
 
-    // 输入完毕后确定按钮
-
-    addOrUpdateVideo() {
-      if (!this.videoInfo.id) {
-        this.addVideo();
-      } else {
-        this.updateVideo();
-      }
-    },
-
-    addVideo() {
-      video.saveVideoInfo(this.videoInfo).then((response) => {
+    saveOrUpdateVideo() {
+      video.saveOrUpdateVideo(this.videoInfo).then((response) => {
         this.dialogVideoFormVisible = false;
         this.$message({
           type: "success",
-          message: "添加成功",
+          message: "操作成功",
         }),
-          this.getChapterVo();
+          this.getChapterVO();
       });
     },
 
-    updateVideo() {
-      video.updateVideoInfo(this.videoInfo).then((response) => {
-        this.dialogVideoFormVisible = false;
-        this.$message({
-          type: "success",
-          message: "修改成功",
-        }),
-          this.getChapterVo();
-      });
-    },
-
-    // 修改小节
+    // 回显小节数据
     editVideo(videoId) {
       video.getVideoInfo(videoId).then((response) => {
-        this.videoInfo = response.data.videoInfo;
-        if(this.videoInfo.videoOriginalName !== ""){
+        this.videoInfo = response.data;
+        if (this.videoInfo.videoOriginalName !== "") {
           this.fileList = [{ name: this.videoInfo.videoOriginalName }];
-        }else{
-           this.fileList = [];
+        } else {
+          this.fileList = [];
         }
-        
       });
       this.dialogVideoFormVisible = true;
-      
     },
 
     removeVideo(videoId, title) {
@@ -316,17 +276,28 @@ export default {
           type: "success",
           message: "已成功删除" + title + "小节！",
         }),
-          this.getChapterVo();
+          this.getChapterVO();
       });
     },
     // ============================小节视频操作=====================
 
     //成功回调
     handleVodUploadSuccess(response, file, fileList) {
-      this.videoInfo.videoSourceId = response.data.videoSourceId;
-      this.videoInfo.videoOriginalName = file.name;
-      
+      if (response.code != 0) {
+        this.$message({
+          type: "error",
+          message: response.message,
+        });
+      } else {
+        this.$message({
+          type: "success",
+          message: "视频上传成功",
+        }),
+        this.videoInfo.videoSourceId = response.data;
+        this.videoInfo.videoOriginalName = file.name;
+      }
     },
+
     //视图上传多于一个视频
     handleUploadExceed() {
       this.$message.warning("想要重新上传视频，请先删除已上传的视频");
@@ -334,13 +305,13 @@ export default {
 
     // 删除前
     beforeRemoveVod(file, fileList) {
-      return this.$confirm(`确定移除 ${ file.name }？`);
+      return this.$confirm(`确定移除 ${file.name}？`);
     },
 
     // 确定删除
     handleRemoveVod() {
       video.deleteAliyunVod(this.videoInfo.videoSourceId).then((response) => {
-         this.fileList = [];
+        this.fileList = [];
         this.videoInfo.videoSourceId = "";
         this.videoInfo.videoOriginalName = "";
         this.$message({

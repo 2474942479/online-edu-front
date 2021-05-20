@@ -106,18 +106,10 @@
               <span class="el-upload-list__item-preview" @click="imgPreview(file)">
                 <i class="el-icon-zoom-in"></i>
               </span>
-              <span
-                v-if="!disabled"
-                class="el-upload-list__item-delete"
-                @click="imgDownload(file)"
-              >
+              <span v-if="!disabled" class="el-upload-list__item-delete" @click="imgDownload(file)">
                 <i class="el-icon-download"></i>
               </span>
-              <span
-                v-if="!disabled"
-                class="el-upload-list__item-delete"
-                @click="imgRemove(file)"
-              >
+              <span v-if="!disabled" class="el-upload-list__item-delete" @click="imgRemove(file)">
                 <i class="el-icon-delete"></i>
               </span>
             </span>
@@ -209,8 +201,7 @@ export default {
       } else {
         this.courseInfo = {};
         this.subjectIdList = [];
-        this.courseInfo.cover =
-          process.env.OSS_PATH + "/crouse/course_cover_default.png";
+        this.imgFilesList = [];
       }
     },
 
@@ -262,11 +253,13 @@ export default {
       course.getCourseInfoById(courseId).then((response) => {
         this.courseInfo = response.data;
         this.subjectIdList = JSON.parse(response.data.subjectIds);
-        this.imgFilesList.push({
-          url: response.data.cover,
-          name: response.data.title,
-          id: response.data.id,
-        });
+        if (response.data.cover) {
+          this.imgFilesList.push({
+            url: response.data.cover,
+            name: response.data.title,
+            id: response.data.id,
+          });
+        }
       });
     },
 
@@ -319,14 +312,21 @@ export default {
     },
 
     imgDownload(file) {
-
+      window.open(file.url,"_blank");
     },
 
     imgRemove(file) {
-      
-    }
-
-
+      var fileUrls = [];
+      fileUrls.push(this.courseInfo.cover);
+      course.removeBatchOssFile(fileUrls).then(() => {
+        this.$message({
+          type: "success",
+          message: "删除封面成功",
+        });
+        this.imgFilesList = [];
+        this.courseInfo.cover = null;
+      });
+    },
   },
 };
 </script>

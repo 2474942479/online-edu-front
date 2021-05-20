@@ -51,7 +51,7 @@
       <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
       <el-table-column label="课程封面" width="300px" height="300px" align="center">
         <template slot-scope="scope">
-          <el-image  :src="scope.row.cover" fit="scale-down"></el-image>
+          <el-image  :src="scope.row.cover" fit="scale-down" style="width: 50%" v-if="scope.row.cover" ></el-image>
         </template>
       </el-table-column>
       <el-table-column prop="title" label="课程标题" width="150" align="center"></el-table-column>
@@ -123,7 +123,6 @@ export default {
     return {
       // 获取dev.env中BASE_API的值
       BASE_API: process.env.BASE_API,
-
       formLabelWidth: "80px",
       loading: false,
       timer: null,
@@ -133,6 +132,7 @@ export default {
       total: 0, //总记录数
       courseQueryDTO: {}, //查询条件对象  双向绑定自动填充
       list: null, //查询之后接口返回的集合
+      srcList:[],
     };
   },
   created() {

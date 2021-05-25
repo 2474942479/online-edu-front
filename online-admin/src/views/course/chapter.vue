@@ -32,23 +32,10 @@
         </el-dialog>
       </el-form-item>
       <el-form-item>
-        <ul class="chapterList">
-          <li v-for="chapter in chapterVO" :key="chapter.id">
-            <p>
-              {{ chapter.title }}
-              <span class="acts">
-                <el-button
-                  round
-                  type="primary"
-                  icon="el-icon-plus"
-                  @click="openVideoDialog(chapter.id)"
-                >添加课时</el-button>
-                <el-button
-                  round
-                  type="primary"
-                  icon="el-icon-edit"
-                  @click="editChapter(chapter.id)"
-                >编辑</el-button>
+        <el-collapse accordion>
+          <template v-for="chapter in chapterVO">
+            <el-collapse-item class=".el-collapse-item__header">
+              <template slot="title" class="collapse-title">
                 <el-popconfirm
                   confirmButtonText="确认"
                   @confirm="removeChapter(chapter.id,chapter.title)"
@@ -57,38 +44,100 @@
                   iconColor="red"
                   title="将永久删除该章节, 是否继续?"
                 >
-                  <el-button round type="danger" icon="el-icon-delete" slot="reference">删除</el-button>
+                  <el-button round type="text" icon="el-icon-delete" slot="reference">删除</el-button>
                 </el-popconfirm>
-              </span>
-            </p>
-            <!-- 小节 -->
-            <ul class="chapterList videoList">
-              <li v-for="video in chapter.videoVOList" :key="video.id">
-                <p>
-                  {{ video.title }}
-                  <span class="acts">
-                    <el-button
-                      round
-                      type="primary"
-                      icon="el-icon-edit"
-                      @click="editVideo(video.id)"
-                    >编辑</el-button>
-                    <el-popconfirm
-                      confirmButtonText="确认"
-                      @confirm="removeVideo(video.id,video.title)"
-                      cancelButtonText="取消"
-                      icon="el-icon-info"
-                      iconColor="red"
-                      title="将永久删除该章节以及视频, 是否继续?"
-                    >
-                      <el-button round type="danger" icon="el-icon-delete" slot="reference">删除</el-button>
-                    </el-popconfirm>
-                  </span>
-                </p>
-              </li>
-            </ul>
-          </li>
-        </ul>
+                <el-button-group>
+                  <el-button
+                    round
+                    type="text"
+                    icon="el-icon-plus"
+                    @click="openVideoDialog(chapter.id)"
+                  >添加课时</el-button>
+                  <el-button
+                    round
+                    type="text"
+                    icon="el-icon-edit"
+                    @click="editChapter(chapter.id)"
+                  >编辑</el-button>
+                </el-button-group>
+                <div style="margin-left:0; margin-right: auto;">
+                  <b>{{chapter.title}}</b>  </b>   {{chapter.description}}
+                </div>
+              </template>
+              <!-- 小节 -->
+              <ul class="chapterList videoList">
+                <li
+                  v-for="video in chapter.videoVOList"
+                  :key="video.id"
+                  style="margin-top: 20px;margin-left:30px"
+                >
+                  <el-card class="box-card" shadow="hover" :body-style="{ padding: '0px' }">
+                    <div style="padding: 14px;">
+                      <div class="bottom clearfix">
+                        <div style="font-size: 20px" class="contentRow">
+                          <img
+                            src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+                            style=" width: 100px;display: inline; border-radius: 5px"
+                          />
+                          <span class="contentRowChild">
+                            {{ video.title }}
+                            <el-divider direction="vertical"></el-divider>
+                            <el-tag type="success" v-if="video.isFree" size="medium">免费</el-tag>
+                            <el-tag type="danger" v-if="!video.isFree" size="medium">收费</el-tag>
+                            <el-divider direction="vertical"></el-divider>
+                            <el-tooltip
+                              effect="dark"
+                              placement="bottom"
+                              v-if="video.videoOriginalName"
+                            >
+                              <div slot="content">
+                                <br />
+                                视频大小: {{video.size}}
+                                <br />
+                                视频时间: {{video.duration}}
+                                <br />
+                                视频状态: {{video.status}}
+                              </div>
+                              <el-tag>{{video.videoOriginalName}}</el-tag>
+                            </el-tooltip>
+                            <div>简介: {{ video.description }}</div>
+                          </span>
+
+                          <span class="btnGroup">
+                            <el-button
+                              round
+                              type="primary"
+                              icon="el-icon-edit"
+                              @click="editVideo(video.id)"
+                            >编辑</el-button>
+                            <el-popconfirm
+                              confirmButtonText="确认"
+                              @confirm="removeVideo(video.id,video.title)"
+                              cancelButtonText="取消"
+                              icon="el-icon-info"
+                              iconColor="red"
+                              title="将永久删除该章节以及视频, 是否继续?"
+                            >
+                              <el-button
+                                round
+                                type="danger"
+                                icon="el-icon-delete"
+                                slot="reference"
+                              >删除</el-button>
+                            </el-popconfirm>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </el-card>
+                </li>
+              </ul>
+            </el-collapse-item>
+          </template>
+          <ul class="chapterList">
+            <li v-for="chapter in chapterVO" :key="chapter.id"></li>
+          </ul>
+        </el-collapse>
 
         <!-- 添加和修改课时表单 -->
         <el-dialog :visible.sync="dialogVideoFormVisible" title="课时详情" center>
@@ -293,7 +342,7 @@ export default {
           type: "success",
           message: "视频上传成功",
         }),
-        this.videoInfo.videoSourceId = response.data;
+          (this.videoInfo.videoSourceId = response.data);
         this.videoInfo.videoOriginalName = file.name;
       }
     },
@@ -325,6 +374,33 @@ export default {
 </script>
 
 <style scoped>
+::v-deep .el-collapse-item__header {
+  height: 60px;
+  background-color: #fff;
+  color: #303133;
+  cursor: pointer;
+  border-bottom: 1px solid #ebeef5;
+  font-size: 20px;
+  font-weight: 500;
+  -webkit-transition: border-bottom-color 0.3s;
+  transition: border-bottom-color 0.3s;
+  outline: 0;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+::v-deep .el-collapse-item__content {
+  padding: 0;
+}
+
+::v-deep .el-collapse-item__arrow {
+  margin: 4px 4px 4px 12px;
+}
+
+.collapse-title {
+  display: flex;
+}
+
 .chapterList {
   position: relative;
   list-style: none;
@@ -343,20 +419,35 @@ export default {
   width: 100%;
   border: 1px solid #ddd;
 }
-.chapterList .acts {
+.acts {
   float: right;
   font-size: 14px;
 }
 .videoList {
   padding-left: 50px;
+  /* display: flex; */
 }
 .videoList p {
-  font-size: 14px;
+  font-size: 18px;
   margin: 10px 0;
   padding: 10px;
   height: 50px;
   line-height: 30px;
   width: 100%;
   border: 1px dotted #ddd;
+}
+.contentRow {
+  position: relative;
+}
+.contentRowChild {
+  position: absolute;
+  top: 0;
+  margin-left: 20px;
+}
+.btnGroup {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>

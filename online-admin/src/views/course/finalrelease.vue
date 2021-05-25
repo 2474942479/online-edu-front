@@ -18,7 +18,7 @@
           <span>共{{ finalreleaseInfo.lessonNum }}课时</span>
         </p>
         <p>
-          <span>所属分类：{{ finalreleaseInfo.oneSubjectTitle }} — {{ finalreleaseInfo.twoSubjectTitle }}</span>
+          <span>所属分类：{{ finalreleaseInfo.subjectName }}</span>
         </p>
         <p class="gray">课程讲师：{{ finalreleaseInfo.teacherName }}</p>
         <h4 class="red">优惠:{{ Number(finalreleaseInfo.reductionMoney) }}￥</h4><br><br><br>

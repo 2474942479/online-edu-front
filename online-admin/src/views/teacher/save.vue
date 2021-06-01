@@ -53,7 +53,7 @@
       </el-form-item>
 
       <el-form-item style="text-align: center;">
-        <el-button :disabled="saveBtnDisabled" type="primary" @click="addOrEdit">保存</el-button>
+        <el-button :disabled="saveBtnDisabled" type="primary" @click="saveOrUpdateTeacher">保存</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -111,12 +111,12 @@ export default {
       }
     },
 
-    add() {
-      teacher.addTeacher(this.teacherInfo).then((response) => {
+    saveOrUpdateTeacher() {
+      teacher.saveOrUpdateTeacher(this.teacherInfo).then((response) => {
         // 1 提示添加成功
         this.$message({
           type: "success",
-          message: "添加成功!",
+          message: "保存成功!",
         });
         // 2 跳转到列表页面 路由跳转
         this.$router.push({ path: "/teacher/list" });
@@ -129,28 +129,6 @@ export default {
       });
     },
 
-    update() {
-      teacher.uptateTeacher(this.teacherInfo).then((response) => {
-        // 1 提示修改成功
-        this.$message({
-          type: "success",
-          message: "修改成功!",
-        });
-        // 2 跳转到列表页面 路由跳转
-        this.$router.push({ path: "/teacher/list" });
-      });
-    },
-
-    addOrEdit() {
-      // 根据teacher中是否有id这个字段判断是修改还是添加
-      // 有id字段代表修改  无代表添加（添加会自动生成id）
-
-      if (!this.teacherInfo.id) {
-        this.add();
-      } else {
-        this.update();
-      }
-    },
 
     // 关闭上传弹框的方法
     close() {

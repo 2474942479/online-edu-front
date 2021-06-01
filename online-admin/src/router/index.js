@@ -31,6 +31,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/dashboard',
     name: 'Dashboard',
+    meta: { title: '假老外后台首页', icon: 'el-icon-s-home' },
     children: [{
       path: 'dashboard',
       component: () => import('@/views/dashboard/index'),

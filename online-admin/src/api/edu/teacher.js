@@ -24,11 +24,11 @@ export default {
     },
 
     // 添加讲师
-    addTeacher(teacherInfo){
+    saveOrUpdateTeacher(teacherDTO){
         return request({
-            url:`/eduService/teacher/addTeacher`,
+            url:`/eduService/teacher/saveOrUpdateTeacher`,
             method:'post',
-            data: teacherInfo
+            data: teacherDTO
         })
     },
 
@@ -39,16 +39,5 @@ export default {
             method: "get"
         })
     },
-
-    // 修改讲师
-    uptateTeacher(teacherInfo){
-        return request({
-            url: `/eduService/teacher/updateTeacher`,
-            method: "put",
-            data: teacherInfo
-        })
-    }
-
-
 
 }

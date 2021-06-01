@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <h1>外教列表</h1>
+    <h1>轮播图列表</h1>
     <!-- 条件查询表单 -->
     <el-form :inline="true" :model="teacherQueryDTO" class="demo-form-inline">
       <el-form-item label="姓名">

@@ -40,7 +40,6 @@ export default {
   methods: {
     create() {
       this.btnDisabled = true;
-      console.log(this.day)
       daily.createStatistics(this.day).then((response) => {
         this.btnDisabled = false;
         this.$message({

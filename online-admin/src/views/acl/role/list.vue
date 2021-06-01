@@ -34,7 +34,7 @@
 
       <el-table-column label="操作" width="300" align="center">
         <template slot-scope="scope">
-          <router-link :to="'/acl/role/distribution/'+scope.row.id">
+          <router-link :to="'/acl/role/getRolePermission/'+scope.row.id">
             <el-button type="info" size="mini" icon="el-icon-plus" v-if="hasPerm('role.acl')">授权</el-button>
           </router-link>
           <router-link :to="'/acl/role/update/'+scope.row.id">
@@ -83,13 +83,11 @@ export default {
 
   // 生命周期函数：内存准备完毕，页面尚未渲染
   created() {
-    console.log("list created......");
     this.fetchData();
   },
 
   // 生命周期函数：内存准备完毕，页面渲染成功
   mounted() {
-    console.log("list mounted......");
   },
 
   methods: {

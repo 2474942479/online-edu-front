@@ -62,7 +62,7 @@ export default {
     getJsonToList(list, jsonList) {
       //遍历这个集合对象，获取key的值
       for (var i = 0; i < jsonList.length; i++) {
-        if (jsonList[i]["selected"] == true && jsonList[i]["level"] == 4) {
+        if (jsonList[i]["selected"] == true && (jsonList[i]["level"] == 4 || jsonList[i]["level"] == 3)) {
           list.push(jsonList[i]["id"]);
         }
 

@@ -134,6 +134,7 @@
 <script>
 import course from "@/api/edu/course";
 import subject from "@/api/edu/subject";
+import oss from "@/api/edu/oss";
 // 引入上传头像
 import ImageCropper from "@/components/ImageCropper";
 import PanThumb from "@/components/PanThumb";
@@ -318,7 +319,7 @@ export default {
     imgRemove(file) {
       var fileUrls = [];
       fileUrls.push(this.courseInfo.cover);
-      course.removeBatchOssFile(fileUrls).then(() => {
+      oss.removeBatchOssFile(fileUrls).then(() => {
         this.$message({
           type: "success",
           message: "删除封面成功",

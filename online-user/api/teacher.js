@@ -4,18 +4,19 @@ export default {
 
     // 分页讲师查询
 
-    getTeacherFront(current,size){
+    getTeacherList(teacherQueryDTO){
         return request({
-            url: `/eduCms/teacherFront/getTeacherFront/${current}/${size}`,
-            method: "get"
+            url: `/eduCms/teacher/getTeacherList`,
+            method: "post",
+            data: teacherQueryDTO
         })
 
     },
 
     // 根据id获取讲师信息
-    getTeacherAll(id){
+    getTeacherInfoById(id){
         return request({
-            url: `/eduCms/teacherFront/getTeacherAllById/${id}`,
+            url: `/eduCms/teacher/getTeacherInfoById/${id}`,
             method: "get"
         })
     }

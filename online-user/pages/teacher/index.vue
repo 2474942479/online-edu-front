@@ -21,13 +21,13 @@
             <span class="c-666 fsize14 ml10 vam">没有相关数据，小编正在努力整理中...</span>
           </section>
           <!-- /无数据提示 结束-->
-          <article class="i-teacher-list" v-if="pageInfo.total >0">
+          <article class="i-teacher-list" v-if="pageInfo.total > 0">
             <ul class="of">
               <li v-for="teacher in pageInfo.records" :key="teacher.id">
                 <section class="i-teach-wrap">
                   <div class="i-teach-pic">
                     <a :href="'/teacher/'+teacher.id" :title="teacher.name" target="_top">
-                      <img :src="teacher.avatar" :alt="teacher.name" width="100px" height="100px"/>
+                      <img :src="teacher.avatar" :alt="teacher.name" width="100px" height="100px" />
                     </a>
                   </div>
                   <div class="mt10 hLh30 txtOf tac">
@@ -98,21 +98,36 @@
 <script>
 import teacherApi from "@/api/teacher";
 export default {
-  // 异步调用，只调用一次
-  // params相当于this.$route.params
-  asyncData({ params, erroe }) {
-    //Bug retuen 后不要加回车
-    return teacherApi.getTeacherFront(1, 8).then((response) => {
-      //  相当于data():{pageInfo:{}} this.list = response.data.data的简写
-      return { pageInfo: response.data.data };
-    });
+  data() {
+    return {
+      page: 1,
+      pageInfo: {},
+      size: 8,
+      teacherQueryDTO: {},
+    };
+  },
+
+  created() {
+    this.initTeacher();
   },
 
   methods: {
+    initTeacher() {
+      this.teacherQueryDTO.size = this.size;
+      this.teacherQueryDTO.page = this.page;
+      return teacherApi
+        .getTeacherList(this.teacherQueryDTO)
+        .then((response) => {
+          //  相当于data():{pageInfo:{}} this.list = response.data.data的简写
+          this.pageInfo = response.data.data
+        });
+    },
+
     // 分页方法
     gotoPage(page) {
-      teacherApi.getTeacherFront(page, 8).then((response) => {
-         this.pageInfo = response.data.data 
+      this.teacherQueryDTO.page = page;
+      teacherApi.getTeacherList(this.teacherQueryDTO).then((response) => {
+        this.pageInfo = response.data;
       });
     },
   },

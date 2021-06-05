@@ -83,14 +83,14 @@ export default {
       loginApi.postLoginInfo(this.loginInfo).then((response) => {
         // 第二步 将返回的token字符串放到cookie中
         // 三个参数 1 cookie中参数名 2 参数对应的值 3 作用范围
-        cookie.set("token", response.data.data.token, {
+        cookie.set("token", response.data.data, {
           domain: "localhost",
         });
         // 第三步 request.js中添加拦截器
         // 调用接口 根据token中的id获取用户信息 在首页展示
         loginApi.getUserInfoByToken().then((response) => {
           // 获取用户信息放到cookie中
-          cookie.set("userInfo", response.data.data.userInfo, {
+          cookie.set("userInfo", response.data.data, {
             domain: "localhost",
           });
 
@@ -100,7 +100,7 @@ export default {
 
         this.$message({
           type: "success",
-          message: response.data.message,
+          message: "登录成功",
         });
       });
     },

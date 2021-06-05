@@ -81,7 +81,7 @@ import teacherApi from "@/api/teacher";
 export default {
   // params.id获取路径id值
   asyncData({ params, error }) {
-    return teacherApi.getTeacherAll(params.id)
+    return teacherApi.getTeacherInfoById(params.id)
       .then(response => {
         return {
           teacher: response.data.data.teacherInfo,

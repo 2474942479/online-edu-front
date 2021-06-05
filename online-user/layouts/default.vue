@@ -10,21 +10,21 @@
         </h1>
         <div class="h-r-nsl">
           <ul class="nav">
-            <router-link to="/" tag="li" active-class="current" exact >
+            <router-link to="/" tag="li" active-class="current" exact>
               <a>首页</a>
             </router-link>
-            <router-link to="/course" tag="li" active-class="current" >
+            <router-link to="/course" tag="li" active-class="current">
               <a>课程</a>
             </router-link>
             <router-link to="/teacher" tag="li" active-class="current">
               <a>名师</a>
             </router-link>
-            <router-link to="/article" tag="li" active-class="current">
+            <!-- <router-link to="/article" tag="li" active-class="current">
               <a>文章</a>
             </router-link>
             <router-link to="/qa" tag="li" active-class="current">
               <a>问答</a>
-            </router-link>
+            </router-link>-->
           </ul>
           <!-- / nav -->
           <ul class="h-r-login">
@@ -46,7 +46,7 @@
             </li>
             <li v-if="loginInfo.id" id="is-login-two" class="h-r-user">
               <a href="/user" title>
-                <img :src="loginInfo.avatar" width="30" height="30" class="vam picImg" alt />
+                <img :src="loginInfo.avatar" width="50" height="50" class="vam picImg" alt />
                 <span id="userName" class="vam disIb">{{ loginInfo.nickname }}</span>
               </a>
               <a href="javascript:void(0);" title="退出" @click="logout()" class="ml5">退出</a>
@@ -83,7 +83,7 @@
           </h4>
           <ul class="of flink-list">
             <li>
-              <a href="http://www.atguigu.com/" title="思勤教育" target="_blank">思勤教育</a>
+              <a href="http://www.baidu.com/" title="思勤教育" target="_blank">思勤教育</a>
             </li>
           </ul>
           <div class="clear"></div>
@@ -124,18 +124,17 @@
   </div>
 </template>
 <script>
-import '~/assets/css/reset.css'
-import '~/assets/css/theme.css'
-import '~/assets/css/global.css'
-import '~/assets/css/web.css'
-import '~/assets/css/base.css'
-import '~/assets/css/activity_tab.css'
-import '~/assets/css/bottom_rec.css'
-import '~/assets/css/nice_select.css'
-import '~/assets/css/order.css'
-import '~/assets/css/swiper-3.3.1.min.css'
-import "~/assets/css/pages-weixinpay.css"
-
+import "~/assets/css/reset.css";
+import "~/assets/css/theme.css";
+import "~/assets/css/global.css";
+import "~/assets/css/web.css";
+import "~/assets/css/base.css";
+import "~/assets/css/activity_tab.css";
+import "~/assets/css/bottom_rec.css";
+import "~/assets/css/nice_select.css";
+import "~/assets/css/order.css";
+import "~/assets/css/swiper-3.3.1.min.css";
+import "~/assets/css/pages-weixinpay.css";
 
 import cookie from "js-cookie";
 import loginApi from "@/api/login";
@@ -167,10 +166,9 @@ export default {
     getUserInfoByWx() {
       cookie.set("token", this.token, { domain: "localhost" });
       loginApi.getUserInfoByToken().then((response) => {
-        this.loginInfo = response.data.data.userInfo;
+        this.loginInfo = response.data.data;
         // 获取用户信息放到cookie中
         cookie.set("userInfo", this.loginInfo, { domain: "localhost" });
-        
       });
     },
 
@@ -182,3 +180,10 @@ export default {
   },
 };
 </script>
+
+<style>
+.item {
+  margin-top: 10px;
+  margin-right: 40px;
+}
+</style>

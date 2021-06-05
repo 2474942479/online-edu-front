@@ -127,9 +127,9 @@ export default {
       if (!this.sendBtnDisabled) {
         return;
       }
-      //      按钮不可用
+      // 按钮不可用
       this.sendBtnDisabled = false;
-      //         开始倒计时
+      // 开始倒计时
       this.timeDown();
       registerApi
         .sendCodeByMobile(this.registerInfo.mobile)
@@ -137,7 +137,7 @@ export default {
           // 提示信息
           this.$message({
             type: 'success',
-            message: response.data.message,
+            message: "验证码发送成功",
           });
         })
         .catch((response) => {
@@ -169,7 +169,7 @@ export default {
           // 提示注册成功
           this.$message({
             type: "success",
-            message: response.data.message,
+            message: "注册成功, 将跳转至登录页面!",
           });
           // 跳转到登录页面
           this.$router.push({ path: "/login" });

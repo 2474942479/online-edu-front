@@ -5,7 +5,9 @@
       <section class="path-wrap txtOf hLh30">
         <a href="/" title class="c-999 fsize14">首页</a>
         \
-        <a href="/course" title class="c-999 fsize14">课程列表</a>
+        <a href="/course" title class="c-999 fsize14">课程</a>
+        \
+        <span class="c-333 fsize14">{{subjectName}}</span>
         \
         <span class="c-333 fsize14">{{courseBaseInfo.title}}</span>
       </section>
@@ -115,7 +117,7 @@
                   </h6>
                   <section class="mt20">
                     <div class="lh-menu-wrap">
-                      <menu id="lh-menu" class="lh-menu mt10 mr10">
+                      <menu id="lh-menu" class="lh-menu mt10 mr10" v-if="chapterAllInfo">
                         <ul>
                           <!-- 文件目录 -->
                           <li
@@ -130,7 +132,7 @@
                             <ol class="lh-menu-ol" style="display: block;">
                               <li
                                 class="lh-menu-second ml30"
-                                v-for="video in chapter.children"
+                                v-for="video in chapter.videoVOList"
                                 :key="video.id"
                               >
                                 <a
@@ -138,8 +140,12 @@
                                   :title="video.title"
                                   target="_blank"
                                 >
-                                  <span class="fr">
+                                  <span class="fr" v-if="video.isFree">
                                     <i class="free-icon vam mr10">免费试听</i>
+                                  </span>
+
+                                  <span class="fr" v-if="!video.isFree">
+                                    <i class="free-icon vam mr10" style="border:1px solid #ec0c17;border-radius: 20px;color: #ec0c17;">付费购买</i>
                                   </span>
                                   <em class="lh-menu-i-2 icon16 mr5">&nbsp;</em>
                                   {{video.title}}
@@ -326,6 +332,8 @@ export default {
       size: 5,
       orderInfo: {},
       checkOrderInfo: {},
+      commentQueryDTO:{},
+      subjectName:""
     };
   },
 
@@ -339,10 +347,11 @@ export default {
   methods: {
 
     initCourseAllInfo(){
-      courseApi.getCourseAllInfo(this.$route.params.id).then((response) => {
+      courseApi.getCourseInfo(this.$route.params.id).then((response) => {
         this.courseId= this.$route.params.id,
-        this.courseBaseInfo = response.data.data.courseBaseInfo,
-        this.chapterAllInfo = response.data.data.chapterVoList,
+        this.courseBaseInfo = response.data.data.courseVO,
+        this.subjectName = response.data.data.subjectName
+        this.chapterAllInfo = response.data.data.chapterList,
         this.isBuy = response.data.data.isBuy
     });
     },
@@ -359,16 +368,21 @@ export default {
 
     // 初始化评论列表
     initComment() {
+      this.commentQueryDTO.page = 1;
+      this.commentQueryDTO.size = this.size;
+      this.commentQueryDTO.courseId = this.$route.params.id
+
       commentApi
-        .getCommentList(1, this.size, this.$route.params.id)
+        .getCommentList(this.commentQueryDTO)
         .then((response) => {
           this.commentAllInfo = response.data.data;
         });
     },
     // 评论翻页
     gotoPage(page) {
+      this.commentQueryDTO.page = page;
       commentApi
-        .getCommentList(page, this.size, this.courseId)
+        .getCommentList(this.commentQueryDTO)
         .then((response) => {
           this.commentAllInfo = response.data.data;
         });
@@ -384,7 +398,7 @@ export default {
       commentApi.saveComment(this.commentInfo).then((response) => {
         this.$message({
           type: "success",
-          message: response.data.message,
+          message: "评论发表成功",
         });
         this.commentInfo.content = "";
         this.initComment();

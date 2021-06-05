@@ -4,7 +4,7 @@ import { Message, MessageBox } from 'element-ui'
 // 创建axios实例
 const service = axios.create({
   baseURL: 'http://localhost:10002', // api的base_url
-  timeout: 20000 // 请求超时时间
+  timeout: 5000 // 请求超时时间
 })
 
 // 第三步 创建拦截器  发送请求前进行拦截
@@ -25,7 +25,7 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => {
 
-    if (response.data.code == 20000) {
+    if (response.data.code == 0) {
       return response
     } else {
       /**
@@ -34,7 +34,7 @@ service.interceptors.response.use(
       // 返回错误码,自行定义,根据项目需求和实际情况
       switch (response.data.code) {
         // 50008:非法的token; 50012:其他客户端登录了;  50014:Token 过期了;
-        case 28004: case 50008 :case 50012: case 50014:
+        case 202007: case 50008 :case 50012: case 50014:
           // 只会在本页面显示，跳转后不显示
           cookie.remove('token');
           cookie.remove("userInfo")

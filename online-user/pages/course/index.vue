@@ -16,7 +16,7 @@
             <dd class="c-s-dl-li">
               <ul class="clearfix">
                 <li>
-                  <a title="全部" href="#" @click="searchOne('')">全部</a>
+                  <a title="全部" href="#" @click="initCourse">全部</a>
                 </li>
                 <li
                   v-for="(item,index) in subjectOneList"
@@ -188,7 +188,12 @@ export default {
   methods: {
     // 初始化课程信息
     initCourse() {
-      courseApi.getCourseList(1, 8, this.courseQuery).then((response) => {
+      this.courseQuery.current = 1;
+      this.courseQuery.size = 8;
+      this.courseQuery.subjectId = "";
+      this.oneIndex = -1;
+      this.twoIndex = -1;
+      courseApi.getCourseList(this.courseQuery).then((response) => {
         this.responseInfo = response.data.data;
       });
     },
@@ -196,25 +201,29 @@ export default {
     // 初始化课程分类信息
     initSubject() {
       courseApi.getAllSubject().then((response) => {
-        this.subjectOneList = response.data.data.list;
+        
+        this.subjectOneList = response.data.data;
       });
     },
 
     //点击一级分类，显示对应的二级分类，并查询数据
-    searchOne(parentId, index) {
+    searchOne(subjectId, index) {
+      console.log(subjectId, index)
       // active样式生效
       this.oneIndex = index;
       this.twoIndex = -1;
 
-      //    清空查询条件中二级分类id和二级分类列表
-      this.courseQuery.subjectId = "";
-      this.subjectTwoList = [];
+      this.courseQuery.subjectId = subjectId
+
+      // 清空查询条件中二级分类id和二级分类列表
+      // this.courseQuery.subjectId = "";
+      // this.subjectTwoList = [];
       // 点击一级分类进行查询
-      this.courseQuery.subjectParentId = parentId;
+      // this.courseQuery.subjectParentId = subjectId;
       this.gotoPage(1);
 
       for (let i = 0; i < this.subjectOneList.length; i++) {
-        if (this.subjectOneList[i].id === parentId) {
+        if (this.subjectOneList[i].id === subjectId) {
           this.subjectTwoList = this.subjectOneList[i].children;
         }
       }
@@ -261,7 +270,7 @@ export default {
 
     // 分页切换
     gotoPage(page) {
-      courseApi.getCourseList(page, 8, this.courseQuery).then((response) => {
+      courseApi.getCourseList(this.courseQuery).then((response) => {
         this.responseInfo = response.data.data;
       });
     },

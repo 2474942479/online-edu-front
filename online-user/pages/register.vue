@@ -169,7 +169,7 @@ export default {
           // 提示注册成功
           this.$message({
             type: "success",
-            message: "注册成功, 将跳转至登录页面!",
+            message: "注册成功, 请登录!",
           });
           // 跳转到登录页面
           this.$router.push({ path: "/login" });

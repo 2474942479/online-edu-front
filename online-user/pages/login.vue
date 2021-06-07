@@ -31,7 +31,7 @@
         </el-form-item>
 
         <div class="btn">
-          <input type="button" class="sign-in-button" value="登录" @click="login()" />
+          <input type="button" class="sign-in-button" style="background-color: #ffaa00" value="登录" @click="login()" />
         </div>
       </el-form>
       <!-- 更多登录方式 -->
@@ -80,15 +80,17 @@ export default {
   methods: {
     login() {
       // 第一步 调用接口返回token字符串
-      loginApi.postLoginInfo(this.loginInfo).then((response) => {
+      loginApi.login(this.loginInfo).then((response) => {
         // 第二步 将返回的token字符串放到cookie中
         // 三个参数 1 cookie中参数名 2 参数对应的值 3 作用范围
+        console.log(response.data)
         cookie.set("token", response.data.data, {
           domain: "localhost",
         });
         // 第三步 request.js中添加拦截器
         // 调用接口 根据token中的id获取用户信息 在首页展示
         loginApi.getUserInfoByToken().then((response) => {
+          console.log(response.data)
           // 获取用户信息放到cookie中
           cookie.set("userInfo", response.data.data, {
             domain: "localhost",

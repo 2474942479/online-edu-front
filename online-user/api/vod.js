@@ -4,7 +4,7 @@ export default {
 
   getPlayAuth(vid) {
     return request({
-      url: `/eduVod/video/getVideoPlayAuth/${vid}`,
+      url: `/eduService/vod/getVideoPlayAuth/${vid}`,
       method: 'get'
     })
   }

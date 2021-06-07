@@ -1,113 +1,114 @@
 <template>
   <div class="Page Confirm">
-    <div class="Title">
-      <h1 class="fl f18">订单确认</h1>
-      <img src="~/assets/img/cart_setp2.png" class="fr" />
-      <div class="clear"></div>
-    </div>
-    <form name="flowForm" id="flowForm" method="post" action>
-      <table class="GoodList">
-        <tbody>
-          <tr>
-            <th class="name">商品</th>
-            <th class="price">原价</th>
-            <th class="priceNew">价格</th>
-          </tr>
-        </tbody>
-        <tbody>
-          <!-- <tr>
-          <td colspan="3" class="Title red f18 fb"><p>限时折扣</p></td>
-          </tr>-->
-          <tr>
-            <td colspan="3" class="teacher">讲师：{{orderInfo.teacherName}}</td>
-          </tr>
-          <tr class="good">
-            <td class="name First">
-              <a target="_blank" :href="'/course/'+orderInfo.courseId">
-                <img :src="orderInfo.courseCover" />
-              </a>
-              <div class="goodInfo">
-                <input type="hidden" class="ids ids_14502" value="14502" />
-                <a
-                  target="_blank"
-                  :href="'/course/'+ orderInfo.courseId"
-                >{{orderInfo.courseTitle}}</a>
+    <el-steps :active="2" finish-status="success" simple style="margin-top: 20px">
+      <el-step title="购买课程"></el-step>
+      <el-step title="确认订单"></el-step>
+      <el-step title="支付订单"></el-step>
+    </el-steps>
+    <el-divider>
+      <i class="el-icon-mobile-phone"></i>
+    </el-divider>
+
+    <el-card class="box-card">
+      <el-form :label-position="labelPosition" label-width="80px" model="formLabelAlign">
+        <el-form-item>
+          <el-table :data="orderVO" style="width: 100%">
+            <el-table-column prop="courseCover" label="商品" width="580" align="center">
+              <div style="display:flex;jus">
+                <el-image
+                  style="width: 150px; height: 200px;display:block"
+                  :src="orderInfo.courseCover"
+                  fit="cover"
+                ></el-image>
+                <div style="text-align:left;margin-left:20px">
+                  <el-link
+                    type="info"
+                    :underline="false"
+                    :href="'/course/'+orderInfo.courseId"
+                    target="_blank"
+                    style="font-size:20px;display:block;margin-bottom:30px"
+                  >{{orderInfo.courseTitle}}</el-link>
+                  <el-link
+                    type="info"
+                    :underline="false"
+                    :href="'/teacher/'+orderInfo.teacherId"
+                    target="_blank"
+                    style="font-size:20px;display:block;margin-bottom:30px"
+                  >{{orderInfo.teacherName}}</el-link>
+                </div>
               </div>
-            </td>
-            <td class="price">
-              <p>
-                ￥
-                <strong>{{Number(orderInfo.courseMoney)}}</strong>
-              </p>
-              <span class="discName red">优惠{{Number(orderInfo.reductionMoney)}}￥</span>
-            </td>
-            <td class="red priceNew Last">
-              ￥
-              <strong>{{Number(orderInfo.payMoney)}}</strong>
-            </td>
-          </tr>
-          <tr>
-            <td class="Billing tr" colspan="3">
-              <div class="tr">
-                <p>
-                  共
-                  <strong class="red">1</strong> 件商品，合计
-                  <span class="red f20">
-                    ￥
-                    <strong>{{Number(orderInfo.payMoney)}}</strong>
-                  </span>
-                </p>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="Finish">
-        <div class="fr" id="AgreeDiv">
-          <label for="Agree">
-            <p class="on">
-              <input type="checkbox"  v-model="buttonDisabled"/>我已阅读并同意
-              <a href="javascript:" target="_blank">《思勤在线购买协议》</a>
-            </p>
-          </label>
-        </div>
-        <div class="clear"></div>
-        <div class="Main fl">
-          <div class="fl">
-            <a :href="'/course/'+orderInfo.courseId">返回课程详情页</a>
-          </div>
-          <div class="fr">
-            <p>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="原价"
+              width="180"
+              align="center"
+              style="text-align:center"
+            >
+              <span style="font-size:20px">￥{{Number(orderInfo.courseMoney)}}</span>
+              <el-tag
+                type="danger"
+                style="font-size:20px;display:block;width:90px;margin-left:35px;margin-top:20px"
+              >优惠￥{{Number(orderInfo.reductionMoney)}}</el-tag>
+            </el-table-column>
+            <el-table-column prop="name" label="现价" width="180" align="center">
+              <span style="font-size:20px">￥{{Number(orderInfo.payMoney)}}</span>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+        <el-form-item>
+          <div>
+            <el-link type="info" :href="'/course/'+orderInfo.courseId" :underline="false">返回课程详情页</el-link>
+            <div style="margin-top:0;display:inline-block;margin-left:510px">
               共
               <strong class="red">1</strong> 件商品，合计
               <span class="red f20">
                 ￥
                 <strong id="AllPrice">{{Number(orderInfo.payMoney)}}</strong>
               </span>
-            </p>
+              <el-divider direction="vertical"></el-divider>
+              <el-button
+                @click="toPay()"
+                :disabled="!buttonDisabled"
+                style="width:120px;height:45px"
+                type="primary"
+                round
+              >去支付</el-button>
+            </div>
           </div>
-        </div>
-        <input name="score" value="0" type="hidden" id="usedScore" />
-        <button class="fr redb" type="button" id="submitPay" @click="toPay()"  :disabled="!buttonDisabled">去支付</button>
-        <div class="clear"></div>
-      </div>
-    </form>
+        </el-form-item>
+        <el-form-item>
+          <el-checkbox v-model="buttonDisabled" style="margin-left:660px">我已阅读并同意</el-checkbox>
+          <el-link type="primary" :underline="false">《假老外购买协议》</el-link>
+        </el-form-item>
+      </el-form>
+    </el-card>
+    <el-divider></el-divider>
   </div>
 </template>
 <script>
 import orderApi from "@/api/order";
 export default {
-  //根据订单id获取订单信息
-  asyncData({ params, error }) {
-    return orderApi.getOrderInfo(params.orderNumber).then((response) => {
-      return {
-        orderInfo: response.data.data.orderInfo,
-        buttonDisabled:false
-      };
-    });
+  data() {
+    return {
+      orderVO: [],
+      orderInfo: {},
+      buttonDisabled: false,
+    };
   },
-  
+
+  created() {
+    this.init(this.$route.params.orderNumber);
+  },
+
   methods: {
+    init(id) {
+      orderApi.getOrderInfo(id).then((response) => {
+        this.orderInfo = response.data.data;
+        this.orderVO.push(response.data.data);
+      });
+    },
+
     //点击去支付，跳转到支付页面
     toPay() {
       this.buttonDisabled = false;

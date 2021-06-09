@@ -27,4 +27,28 @@ export default {
         })
     },
 
+    perfectUser(resetDTO) {
+        return request({
+            url: `/user/perfectUser`,
+            method: "post",
+            data: resetDTO
+        })
+    },
+
+    updateUserPass(resetDTO) {
+        return request({
+            url: `/user/updateUserPass`,
+            method: "post",
+            data: resetDTO
+        })
+    },
+
+    updateUserMobile(resetDTO) {
+        return request({
+            url: `/user/updateUserMobile`,
+            method: "post",
+            data: resetDTO
+        })
+    }
+
 }

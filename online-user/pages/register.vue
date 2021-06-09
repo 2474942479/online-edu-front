@@ -104,6 +104,7 @@
 import "~/assets/css/sign.css";
 import "~/assets/css/iconfont.css";
 import registerApi from "@/api/register";
+import msmApi from "@/api/msm";
 
 export default {
   layout: "sign",
@@ -124,6 +125,15 @@ export default {
   methods: {
     //   获取验证码
     getCode() {
+
+      if(!this.registerInfo.mobile) {
+        this.$notify.error({
+          title: '错误',
+          message: '手机号不能为空'
+        });
+        return;
+      }
+
       if (!this.sendBtnDisabled) {
         return;
       }
@@ -131,7 +141,7 @@ export default {
       this.sendBtnDisabled = false;
       // 开始倒计时
       this.timeDown();
-      registerApi
+      msmApi
         .sendCodeByMobile(this.registerInfo.mobile)
         .then((response) => {
           // 提示信息
@@ -163,6 +173,7 @@ export default {
     },
 
     register() {
+
       registerApi
         .postRegisterInfo(this.registerInfo)
         .then((response) => {

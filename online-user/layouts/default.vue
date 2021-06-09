@@ -52,8 +52,19 @@
                 fit="cover"
                 @click="drawer = true"
               ></el-image>
-              <el-link @click="drawer = true" style="margin-top: -20px;">{{userDTO.nickname}}</el-link>
-              <span>&nbsp;&nbsp;&nbsp;</span>
+              <span>&nbsp;&nbsp;</span>
+              <!-- <el-link @click="drawer = true" style="margin-top: -20px;">{{userDTO.nickname}}</el-link> -->
+              <el-dropdown @command="handleCommand" style=" font-size: 16px;top:-8px">
+                <span class="el-dropdown-link">
+                  {{userDTO.nickname}}
+                  <i class="el-icon-arrow-down el-icon--right"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="userInfo">账号与安全</el-dropdown-item>
+                  <el-dropdown-item command="orderList" :divided="true">购买记录</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+              <span>&nbsp;&nbsp;</span>
               <el-link type="danger" @click="logout" style="margin-top: -20px;">退出</el-link>
             </li>
             <!-- /未登录显示第1 li；登录后显示第2，3 li -->
@@ -61,7 +72,7 @@
           <aside class="h-r-search">
             <form action="#" method="post">
               <label class="h-r-s-box">
-                <input type="text" placeholder="输入你想学的课程" name="queryCourse.courseName" value />
+                <input type="text" placeholder="输入你想学的课程" name="queryCourse.courseName" />
                 <button type="submit" class="s-btn">
                   <em class="icon18">&nbsp;</em>
                 </button>
@@ -88,13 +99,13 @@
         :show-close="false"
         :wrapperClosable="false"
       >
-        <h1>用户信息</h1>
+        <span style="font-size:35px">帐号与安全</span>
         <div class="demo-drawer__content">
-          <el-form :model="userDTO" ref="userForm">
-            <el-form-item label="用户昵称" :label-width="drawer_width" style=" font-size: 15px">
+          <el-form :model="userDTO" ref="userForm" style="text-align:left">
+            <el-form-item label="昵称" :label-width="drawer_width">
               <el-input v-model="userDTO.nickname" />
             </el-form-item>
-            <el-form-item label="性别" prop="sex" :label-width="drawer_width" v-if="sex">
+            <el-form-item label="性别" prop="sex" :label-width="drawer_width">
               <el-select v-model="userDTO.sex" placeholder="请选择">
                 <el-option
                   v-for="item in options"
@@ -115,20 +126,37 @@
             >
               <el-input v-model.number="userDTO.age" type="age" />
             </el-form-item>
-            <el-form-item label="手机号" :label-width="drawer_width" style=" font-size: 15px">
-              <el-input v-model="userDTO.mobile" disabled="true" />
+            <el-form-item label="登录密码" :label-width="drawer_width">
+              <el-input :disabled="true" type="text" v-model="password" style="width:73%" />
+              <el-button
+                plain
+                type="primary"
+                style="font-size:14px;margin-left:-4px;width: 119px;"
+                @click="pwdDialog=true"
+              >
+                <span>修改密码&nbsp;&nbsp;&nbsp;</span>
+                <i class="el-icon-arrow-right"></i>
+              </el-button>
+            </el-form-item>
+            <el-form-item label="手机号" :label-width="drawer_width">
+              <el-input v-model="userDTO.mobile" :disabled="true" style="width:73%" />
+              <el-button
+                plain
+                type="primary"
+                style="font-size:14px;margin-left:-4px;width: 119px;"
+                @click="mobileDialog = true"
+              >
+                <span>更换手机号</span>
+                <i class="el-icon-arrow-right"></i>
+              </el-button>
             </el-form-item>
 
-            <el-form-item label="创建时间" :label-width="drawer_width" style=" font-size: 15px">
+            <el-form-item label="创建时间" :label-width="drawer_width">
               <el-date-picker v-model="userDTO.gmtCreate" type="date" :readonly="true"></el-date-picker>
             </el-form-item>
 
             <!-- 讲师头像上传 -->
-            <el-form-item
-              label="用户头像"
-              :label-width="drawer_width"
-              style="text-align: left; font-size: 15px"
-            >
+            <el-form-item label="用户头像" :label-width="drawer_width" style="text-align: left;">
               <!-- 头像缩略图 -->
               <el-avatar shape="square" :size="100" :src="userDTO.avatar"></el-avatar>
               <!-- 文件上传按钮 -->
@@ -157,7 +185,7 @@
                     <el-upload
                       ref="upload"
                       :drag="true"
-                      :action="BASE_API+'/eduService/oss/upload2Oss'"
+                      :action="'http://localhost:10002/eduService/oss/upload2Oss'"
                       :multiple="false"
                       :on-success="uploadSuccess"
                       :on-error="uploadFail"
@@ -170,11 +198,9 @@
                         将文件拖到此处，或
                         <em>点击上传</em>
                       </div>
-                      <div
-                        style=" font-size: 15px"
-                        class="el-upload__tip"
-                        slot="tip"
-                      >只能上传jpg/png文件，且不超过500kb</div>
+                      <div style=" font-size: 15px" class="el-upload__tip" slot="tip">
+                        <el-tag type="warning">只能上传jpg/png文件，且不超过500kb</el-tag>
+                      </div>
                     </el-upload>
                   </el-main>
                   <el-footer></el-footer>
@@ -208,7 +234,7 @@
         :before-close="checkMobile"
       >
         <el-form
-          :model="userDTO"
+          :model="resetDTO"
           status-icon
           :rules="rules"
           ref="ruleForm"
@@ -217,18 +243,18 @@
           label-position="right"
         >
           <el-form-item label="密码" prop="pass">
-            <el-input type="password" v-model="userDTO.password" autocomplete="off"></el-input>
+            <el-input type="password" v-model="resetDTO.pass" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="确认密码" prop="checkPass">
-            <el-input type="password" v-model="userDTO.checkPass" autocomplete="off"></el-input>
+            <el-input type="password" v-model="resetDTO.checkPass" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="手机号" :label-width="drawer_width" prop="mobile">
-            <el-input type="text" v-model="userDTO.mobile" autocomplete="off"></el-input>
+            <el-input type="text" v-model="resetDTO.mobile" autocomplete="off"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-popover placement="top" width="160" v-model="visible">
-            <p>手机号一经绑定, 暂时将无法修改</p>
+            <p>是否确定提交?</p>
             <div style="text-align: right; margin: 0">
               <el-button size="mini" type="text" @click="visible = false">取消</el-button>
               <el-button type="primary" size="mini" @click="saveUserMobile">确定</el-button>
@@ -236,6 +262,57 @@
             <el-button slot="reference">提交</el-button>
           </el-popover>
         </div>
+      </el-dialog>
+
+      <el-dialog title="设置密码" :visible.sync="pwdDialog" width="30%" :destroy-on-close="true">
+        <el-form
+          :model="resetDTO"
+          status-icon
+          :rules="rules"
+          ref="resetDTO"
+          label-width="100px"
+          class="demo-ruleForm"
+        >
+          <el-form-item label="原密码" prop="oldPass">
+            <el-input type="password" v-model="resetDTO.oldPass"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" prop="pass">
+            <el-input type="password" v-model="resetDTO.pass" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="确认密码" prop="checkPass">
+            <el-input type="password" v-model="resetDTO.checkPass" autocomplete="off"></el-input>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button type="primary" @click="updateUserPass('resetDTO')">提交</el-button>
+            <el-button @click="resetForm('resetDTO')">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+
+      <el-dialog title="更换手机号" :visible.sync="mobileDialog" width="30%" :destroy-on-close="true">
+        <el-form
+          :model="resetDTO"
+          status-icon
+          :rules="rules"
+          ref="mobileForm"
+          label-width="80px"
+          class="demo-ruleForm"
+          label-position="right"
+        >
+          <el-form-item label="手机号" :label-width="drawer_width" prop="mobile">
+            <el-input type="text" v-model="resetDTO.mobile" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="验证码" :label-width="drawer_width" prop="code">
+            <el-input type="text" v-model.number="resetDTO.code" autocomplete="off"></el-input>
+            <el-link @click="sendCode" :underline="false">{{codeText}}</el-link>
+          </el-form-item>
+        </el-form>
+
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="mobileDialog = false">取 消</el-button>
+          <el-button type="primary" @click="resetMobile('mobileForm')">确 定</el-button>
+        </span>
       </el-dialog>
     </header>
     <!-- /公共头引入 -->
@@ -306,30 +383,38 @@ import "~/assets/css/pages-weixinpay.css";
 
 import cookie from "js-cookie";
 import loginApi from "@/api/login";
+import msmApi from "@/api/msm";
 export default {
   data() {
-    var validatePass = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请输入密码"));
-      } else {
-        if (this.userDTO.password !== "") {
-          this.$refs.ruleForm.validateField("checkPass");
-        }
-        callback();
-      }
-    };
-    var validatePass2 = (rule, value, callback) => {
-      if (value === "") {
+
+    var validateCheckPass = (rule, value, callback) => {
+      if (!value || value === "") {
         callback(new Error("请再次输入密码"));
-      } else if (value !== this.userDTO.password) {
+      } else if (value !== this.resetDTO.pass) {
         callback(new Error("两次输入密码不一致!"));
       } else {
         callback();
       }
     };
 
+    var validateOldPass = (rule, value, callback) => {
+      if (!value || value === "") {
+        callback(new Error("请输入原密码"));
+      } else {
+        callback();
+      }
+    };
+
+    var validateResetPass = (rule, value, callback) => {
+      if (!value || value === "") {
+        callback(new Error("请输入密码"));
+      } else {
+        callback();
+      }
+    };
+
     var mobile = (rule, value, callback) => {
-      if (!value) {
+      if (!value || value === "") {
         callback(new Error("请输入手机号"));
       } else if (!/^1[34578]\d{9}$/.test(value)) {
         return callback(new Error("手机号码格式不正确"));
@@ -337,13 +422,17 @@ export default {
       return callback();
     };
     return {
+      resetDTO: {},
+      second: 60, //倒计时间
+      codeText: "发送验证码",
+      pwdDialog: false,
+      mobileDialog: false,
+      password: "*********",
       token: "",
       userDTO: {},
       drawer: false,
       drawer_width: "80px",
       innerDrawer: false,
-      // 获取dev.env中BASE_API的值
-      BASE_API: process.env.BASE_API,
       // 上传组件key的值 (唯一标识)
       imagecropperKey: 0,
       // 上传组件是否显示
@@ -352,9 +441,11 @@ export default {
       timer: null,
       dialogFormVisible: false,
       visible: false,
+      sendBtnDisabled: false,
       rules: {
-        pass: [{ validator: validatePass, trigger: "blur" }],
-        checkPass: [{ validator: validatePass2, trigger: "blur" }],
+        pass: [{ validator: validateResetPass, trigger: "blur" }],
+        checkPass: [{ validator: validateCheckPass, trigger: "blur" }],
+        oldPass: [{ validator: validateOldPass, trigger: "blur" }],
         mobile: [{ validator: mobile, trigger: "blur" }],
       },
       options: [
@@ -389,7 +480,6 @@ export default {
       var userInfo = cookie.get("userInfo");
       if (userInfo) {
         this.userDTO = JSON.parse(userInfo);
-        this.sex = this.userDTO.sex;
       }
     },
 
@@ -398,7 +488,7 @@ export default {
         this.userDTO = response.data.data;
         // 获取用户信息放到cookie中
         cookie.set("userInfo", this.userDTO, { domain: "localhost" });
-        if (!this.userDTO.mobile && !this.userDTO.password) {
+        if (!this.userDTO.mobile) {
           // 刷新后才加载
           this.dialogFormVisible = true;
         }
@@ -414,7 +504,19 @@ export default {
     saveUserMobile() {
       this.$refs["ruleForm"].validate((valid) => {
         if (valid) {
-          this.updateUser();
+          this.resetDTO.id = this.userDTO.id
+          loginApi.perfectUser(this.resetDTO).then((response) => {
+            // 1 提示修改成功
+            this.$message({
+              type: "success",
+              message: "修改成功!",
+            });
+            this.resetDTO = {};
+            // 重新获取token
+            this.getUserInfoByToken();
+            this.getUserInfo();
+            this.dialogFormVisible = false;
+          });
           this.visible = false;
         } else {
           return false;
@@ -443,6 +545,7 @@ export default {
           this.loading = true;
           this.timer = setTimeout(() => {
             this.updateUser();
+            this.getUserInfo();
 
             // 动画关闭需要一定的时间
             setTimeout(() => {
@@ -456,12 +559,83 @@ export default {
       });
     },
 
+    updateUserPass(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.resetDTO.id = this.userDTO.id;
+          loginApi.updateUserPass(this.resetDTO).then((response) => {
+            this.$message({
+              type: "success",
+              message: "重置成功!",
+            });
+
+            this.logout();
+          });
+        } else {
+          return false;
+        }
+      });
+    },
+
+    resetMobile(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.resetDTO.id = this.userDTO.id;
+          loginApi.updateUserMobile(this.resetDTO).then((response) => {
+            this.$message({
+              type: "success",
+              message: "修改成功!",
+            });
+
+            this.logout();
+          });
+        } else {
+          return false;
+        }
+      });
+    },
+
+    // 用户下拉选项
+    handleCommand(command) {
+      if (command === "userInfo") {
+        this.drawer = true;
+      }
+
+      if (command === "orderList") {
+      }
+    },
+
     checkMobile() {
       if (!JSON.parse(cookie.get("userInfo")).mobile) {
         done(false);
       } else {
         done();
       }
+    },
+
+    sendCode() {
+      if (!this.resetDTO.mobile) {
+        this.$notify.error({
+          title: "错误",
+          message: "手机号不能为空",
+        });
+        return;
+      }
+
+      if (this.sendBtnDisabled) {
+        return;
+      }
+      // 按钮不可用
+      this.sendBtnDisabled = true;
+      // 开始倒计时
+      this.timeDown();
+      msmApi.sendCodeByMobile(this.resetDTO.mobile).then((response) => {
+        // 提示信息
+        this.$message({
+          type: "success",
+          message: "验证码发送成功",
+        });
+      });
     },
 
     handleCloseForm() {
@@ -532,6 +706,23 @@ export default {
         message: "上传失败,请重新上传!",
       });
     },
+
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+    },
+    // 获取验证码倒计时
+    timeDown() {
+      let result = setInterval(() => {
+        this.second--;
+        this.codeText = this.second + "秒后重新发送";
+        if (this.second < 1) {
+          clearInterval(result);
+          this.sendBtnDisabled = true;
+          this.second = 60;
+          this.codeText = "发送验证码";
+        }
+      }, 1000);
+    },
   },
 };
 </script>
@@ -540,5 +731,13 @@ export default {
 .item {
   margin-top: 10px;
   margin-right: 40px;
+}
+
+.el-dropdown-link {
+  cursor: pointer;
+  color: #409eff;
+}
+.el-icon-arrow-down {
+  font-size: 12px;
 }
 </style>

@@ -93,7 +93,7 @@ export default {
   methods: {
     // 当页码发生改变的时候
     changeSize(size) {
-      console.log(size);
+      // console.log(size);
       this.limit = size;
       this.fetchData(1);
     },
@@ -121,7 +121,7 @@ export default {
 
     // 重置查询表单
     resetData() {
-      console.log("重置查询表单");
+      // console.log("重置查询表单");
       this.roleQueryDTO = {};
       this.fetchData();
     },
@@ -158,14 +158,14 @@ export default {
 
     // 当表格复选框选项发生变化的时候触发
     handleSelectionChange(selection) {
-      console.log("handleSelectionChange......");
-      console.log(selection);
+      // console.log("handleSelectionChange......");
+      // console.log(selection);
       this.multipleSelection = selection;
     },
 
     // 批量删除
     removeRows() {
-      console.log("removeRows......");
+      // console.log("removeRows......");
 
       if (this.multipleSelection.length === 0) {
         this.$message({
@@ -213,8 +213,8 @@ export default {
     // queryString：文本框中输入的值
     // cb：一个函数
     querySearch(queryString, cb) {
-      console.log(queryString);
-      console.log(cb);
+      // console.log(queryString);
+      // console.log(cb);
 
       // teacher.selectNameByKey(queryString).then(response => {
       //   // 调用 callback 返回建议列表的数据

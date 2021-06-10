@@ -101,7 +101,7 @@ export default {
           this.courseData.push(data.courseNum);
         });
 
-        console.log(this.xAxisData);
+        // console.log(this.xAxisData);
 
         this.setChart();
       });

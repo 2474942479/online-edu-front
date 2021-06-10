@@ -13,7 +13,7 @@ function filterAsyncRouter(asyncRouterMap) { // 遍历后台传来的路由字�
         } else {
           const component = route.component
           route.component = resolve => {
-            console.log(['@/views' + component + '.vue'])
+            // console.log(['@/views' + component + '.vue'])
             require(['@/views' + component + '.vue'], resolve)
           }
         }

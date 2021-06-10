@@ -47,8 +47,8 @@ export default {
         useH5Prism: true, // 播放器类型：html5
       },
       function (player) {
-        console.log(this.playauth);
-        console.log("播放器创建成功");
+        // console.log(this.playauth);
+        // console.log("播放器创建成功");
       }
     );
   },

@@ -208,7 +208,7 @@ export default {
 
     //点击一级分类，显示对应的二级分类，并查询数据
     searchOne(subjectId, index) {
-      console.log(subjectId, index)
+      // console.log(subjectId, index)
       // active样式生效
       this.oneIndex = index;
       this.twoIndex = -1;

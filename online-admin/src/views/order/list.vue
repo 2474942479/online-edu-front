@@ -61,9 +61,18 @@
     <el-table :data="orderList" style="width: 100%" :row-class-name="tableRowClassName">
       <el-table-column label="订单 ID" prop="id"></el-table-column>
       <el-table-column label="订单号" prop="orderNumber"></el-table-column>
-      <el-table-column label="下单人昵称" prop="nickname"></el-table-column>
-      <el-table-column label="支付金额" prop="payMoney"></el-table-column>
-      <el-table-column label="支付状态" prop="status">
+      <el-table-column label="下单人" prop="nickname">
+        <template slot-scope="scope">
+          <i class="el-icon-user-solid"></i>
+          <span>{{ scope.row.nickname }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="支付金额" prop="payMoney">
+        <template slot-scope="scope">
+          <el-tag type="success">{{ scope.row.payMoney }} 元</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="订单状态" prop="status">
         <template slot-scope="props">
           <el-tag type="success" v-if="props.row.status== -1" size="medium">已取消订单</el-tag>
           <el-tag type="danger" v-if="props.row.status== 0" size="medium">待付款</el-tag>
@@ -79,8 +88,12 @@
         <template slot-scope="props">
           <el-card class="box-card" shadow="hover">
             <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item label="课程 ID">
-                <span>{{ props.row.id }}</span>
+              <el-form-item label="课程封面">
+                <el-image
+                  style="width: 100px; height: 150px"
+                  :src="props.row.courseCover"
+                  fit="cover"
+                ></el-image>
               </el-form-item>
               <el-form-item label="课程名称">
                 <span>{{ props.row.courseTitle }}</span>
@@ -91,28 +104,39 @@
               <el-form-item label="用户 ID">
                 <span>{{ props.row.userId }}</span>
               </el-form-item>
-              <el-form-item label="下单人昵称">
-                <span>{{ props.row.nickname }}</span>
+              <el-form-item label="下单人">
+                <i class="el-icon-user-solid" style="margin-left:-44px"></i>
+                <span style="margin-left:25px">{{ props.row.nickname }}</span>
               </el-form-item>
               <el-form-item label="下单手机号">
+                <i class="el-icon-mobile-phone"></i>
                 <span>{{ props.row.mobile }}</span>
               </el-form-item>
               <el-form-item label="课程金额">
-                <span>{{ props.row.courseMoney }}</span>
+                <el-tag type="info">{{ props.row.courseMoney }} 元</el-tag>
               </el-form-item>
               <el-form-item label="优惠金额">
-                <span>{{ props.row.reductionMoney }}</span>
+                <el-tag type="danger">{{ props.row.reductionMoney }} 元</el-tag>
               </el-form-item>
               <el-form-item label="支付金额">
-                <span>{{ props.row.payMoney }}</span>
+                <el-tag type="success">{{ props.row.payMoney }} 元</el-tag>
               </el-form-item>
               <el-form-item label="支付类型">
-                <span>{{ props.row.payType }}</span>
+                <el-tag v-if="props.row.payType== 1" size="medium">支付宝</el-tag>
+                <el-tag v-if="props.row.payType== 2" size="medium">微信</el-tag>
+              </el-form-item>
+              <el-form-item label="订单 ID">
+                <span>{{ props.row.id }}</span>
+              </el-form-item>
+              <el-form-item label="订单号">
+                <span>{{ props.row.orderNumber }}</span>
               </el-form-item>
               <el-form-item label="下单时间">
+                <i class="el-icon-time"></i>
                 <span>{{ props.row.gmtCreate }}</span>
               </el-form-item>
               <el-form-item label="支付时间">
+                <i class="el-icon-time"></i>
                 <span>{{ props.row.gmtModified }}</span>
               </el-form-item>
               <el-form-item label="订单状态">
@@ -321,7 +345,7 @@ export default {
 
       this.orderQueryDTO.size = this.size;
       order.getOrderList(this.orderQueryDTO).then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         // 请求成功
         this.listLoading = true;
         this.page = response.data.current;

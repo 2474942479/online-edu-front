@@ -101,7 +101,7 @@
       >
         <span style="font-size:35px">帐号与安全</span>
         <div class="demo-drawer__content">
-          <el-form :model="userDTO" ref="userForm" style="text-align:left">
+          <el-form :model="userDTO" ref="userForm" style="text-align:left" :rules="rules">
             <el-form-item label="昵称" :label-width="drawer_width">
               <el-input v-model="userDTO.nickname" />
             </el-form-item>
@@ -119,12 +119,8 @@
               label="年龄"
               prop="age"
               :label-width="drawer_width"
-              :rules="[
-                        { required: true, message: '年龄不能为空'},
-                        { type: 'number', message: '年龄必须为数字值'}
-                      ]"
             >
-              <el-input v-model.number="userDTO.age" type="age" />
+              <el-input v-model.number="userDTO.age"/>
             </el-form-item>
             <el-form-item label="登录密码" :label-width="drawer_width">
               <el-input :disabled="true" type="text" v-model="password" style="width:73%" />
@@ -314,6 +310,124 @@
           <el-button type="primary" @click="resetMobile('mobileForm')">确 定</el-button>
         </span>
       </el-dialog>
+
+      <el-drawer
+        title="购买记录!"
+        :visible.sync="orderDrawer"
+        direction="rtl"
+        size="40%"
+        :before-close="handleClose"
+      >
+        <el-table :data="orderList" style="width: 100%" :row-class-name="tableRowClassName">
+          <el-table-column label="课程名称" prop="courseTitle">
+            <template slot-scope="scope">
+              <i class="el-icon-shopping-bag-1"></i>
+              <span>{{ scope.row.courseTitle }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="外教名称" prop="teacherName">
+            <template slot-scope="scope">
+              <i class="el-icon-user"></i>
+              <span>{{ scope.row.teacherName }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="下单人" prop="nickname">
+            <template slot-scope="scope">
+              <i class="el-icon-user-solid"></i>
+              <span>{{ scope.row.nickname }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="支付金额">
+            <template slot-scope="scope">
+              <el-tag type="success">{{ scope.row.payMoney }} 元</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="订单状态" prop="status">
+            <template slot-scope="props">
+              <el-tag type="success" v-if="props.row.status== -1" size="medium">已取消订单</el-tag>
+              <el-tag type="danger" v-if="props.row.status== 0" size="medium">待付款</el-tag>
+              <el-tag v-if="props.row.status== 1" size="medium">已完成</el-tag>
+              <el-tag type="info" v-if="props.row.status== 2" size="medium">已付款/待发货</el-tag>
+              <el-tag type="info" v-if="props.row.status== 3" size="medium">已发货/待收货</el-tag>
+              <el-tag type="success" v-if="props.row.status== 4" size="medium">已确认收货</el-tag>
+              <el-tag type="warning" v-if="props.row.status== 5" size="medium">已超时关闭</el-tag>
+            </template>
+          </el-table-column>
+
+          <el-table-column type="expand">
+            <template slot-scope="props">
+              <el-card class="box-card" shadow="hover">
+                <el-form label-position="left" inline class="demo-table-expand">
+                  <el-form-item>
+                    <el-link
+                      :href="'/course/' + props.row.courseId "
+                      target="_blank"
+                      :underline="false"
+                    >
+                      <el-image
+                        style="width: 100px; height: 150px"
+                        :src="props.row.courseCover"
+                        fit="cover"
+                      ></el-image>
+                    </el-link>
+                  </el-form-item>
+                  <el-form-item label="课程名称">
+                    <i class="el-icon-shopping-bag-1"></i>
+                    <span>{{ props.row.courseTitle }}</span>
+                  </el-form-item>
+                  <el-form-item label="讲师名称">
+                    <i class="el-icon-user"></i>
+                    <span>{{ props.row.teacherName }}</span>
+                  </el-form-item>
+
+                  <el-form-item label="下单人">
+                    <i class="el-icon-user-solid"></i>
+                    <span>{{ props.row.nickname }}</span>
+                  </el-form-item>
+                  <el-form-item label="下单手机号">
+                    <i class="el-icon-mobile-phone"></i>
+                    <span>{{ props.row.mobile }}</span>
+                  </el-form-item>
+                  <el-form-item label="课程金额">
+                    <el-tag type="info">{{ props.row.courseMoney }} 元</el-tag>
+                  </el-form-item>
+                  <el-form-item label="优惠金额">
+                    <el-tag type="danger">{{ props.row.reductionMoney }} 元</el-tag>
+                  </el-form-item>
+                  <el-form-item label="支付金额">
+                    <el-tag type="success">{{ props.row.payMoney }} 元</el-tag>
+                  </el-form-item>
+                  <el-form-item label="支付类型">
+                    <el-tag v-if="props.row.payType== 1" size="medium">支付宝</el-tag>
+                    <el-tag v-if="props.row.payType== 2" size="medium">微信</el-tag>
+                  </el-form-item>
+
+                  <el-form-item label="订单号">
+                    <span>{{ props.row.orderNumber }}</span>
+                  </el-form-item>
+                  <el-form-item label="下单时间">
+                    <i class="el-icon-time"></i>
+                    <span>{{ props.row.gmtCreate }}</span>
+                  </el-form-item>
+                  <el-form-item label="支付时间">
+                    <i class="el-icon-time"></i>
+                    <span>{{ props.row.gmtModified }}</span>
+                  </el-form-item>
+                  <el-form-item label="订单状态">
+                    <el-tag type="success" v-if="props.row.status== -1" size="medium">已取消订单</el-tag>
+                    <el-tag type="danger" v-if="props.row.status== 0" size="medium">待付款</el-tag>
+                    <el-tag v-if="props.row.status== 1" size="medium">已完成</el-tag>
+                    <el-tag type="info" v-if="props.row.status== 2" size="medium">已付款/待发货</el-tag>
+                    <el-tag type="info" v-if="props.row.status== 3" size="medium">已发货/待收货</el-tag>
+                    <el-tag type="success" v-if="props.row.status== 4" size="medium">已确认收货</el-tag>
+                    <el-tag type="warning" v-if="props.row.status== 5" size="medium">已超时关闭</el-tag>
+                  </el-form-item>
+                </el-form>
+              </el-card>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-drawer>
     </header>
     <!-- /公共头引入 -->
 
@@ -384,9 +498,9 @@ import "~/assets/css/pages-weixinpay.css";
 import cookie from "js-cookie";
 import loginApi from "@/api/login";
 import msmApi from "@/api/msm";
+import orderApi from "@/api/order";
 export default {
   data() {
-
     var validateCheckPass = (rule, value, callback) => {
       if (!value || value === "") {
         callback(new Error("请再次输入密码"));
@@ -421,7 +535,30 @@ export default {
       }
       return callback();
     };
+
+    var checkAge = (rule, value, callback) => {
+        if (!value) {
+          return callback(new Error('年龄不能为空'));
+        }
+        setTimeout(() => {
+          if (!Number.isInteger(value)) {
+            callback(new Error('请输入数字值'));
+          } else {
+            if (value < 0 || value > 99) {
+              callback(new Error('年龄必须在0 - 100岁之间'));
+            } else {
+              callback();
+            }
+          }
+        }, 10);
+      };
+
     return {
+      page: 1,
+      size: 10,
+      orderQueryDTO: {},
+      orderList: [],
+      orderDrawer: false,
       resetDTO: {},
       second: 60, //倒计时间
       codeText: "发送验证码",
@@ -447,6 +584,7 @@ export default {
         checkPass: [{ validator: validateCheckPass, trigger: "blur" }],
         oldPass: [{ validator: validateOldPass, trigger: "blur" }],
         mobile: [{ validator: mobile, trigger: "blur" }],
+        age: [{validator: checkAge, trigger: "blur"}]
       },
       options: [
         {
@@ -504,7 +642,7 @@ export default {
     saveUserMobile() {
       this.$refs["ruleForm"].validate((valid) => {
         if (valid) {
-          this.resetDTO.id = this.userDTO.id
+          this.resetDTO.id = this.userDTO.id;
           loginApi.perfectUser(this.resetDTO).then((response) => {
             // 1 提示修改成功
             this.$message({
@@ -602,7 +740,22 @@ export default {
       }
 
       if (command === "orderList") {
+        this.getOrderListByUserId(1);
+        this.orderDrawer = true;
       }
+    },
+
+    getOrderListByUserId(page = 1) {
+      this.orderQueryDTO.current = page;
+      this.orderQueryDTO.size = this.size;
+      this.orderQueryDTO.queryKey = "user_id";
+      this.orderQueryDTO.queryValue = this.userDTO.id;
+      orderApi.getOrderListByUserId(this.orderQueryDTO).then((response) => {
+        this.page = response.data.data.current;
+        this.orderList = response.data.data.records;
+        this.total = response.data.data.total;
+      });
+      console.log(this.orderList);
     },
 
     checkMobile() {
@@ -723,6 +876,23 @@ export default {
         }
       }, 1000);
     },
+
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then((_) => {
+          done();
+        })
+        .catch((_) => {});
+    },
+    // 给行加颜色
+    tableRowClassName({ row, rowIndex }) {
+      if (rowIndex === 1) {
+        return "warning-row";
+      } else if (rowIndex === 3) {
+        return "success-row";
+      }
+      return "";
+    },
   },
 };
 </script>
@@ -739,5 +909,13 @@ export default {
 }
 .el-icon-arrow-down {
   font-size: 12px;
+}
+
+.el-table .warning-row {
+  background: oldlace;
+}
+
+.el-table .success-row {
+  background: #f0f9eb;
 }
 </style>

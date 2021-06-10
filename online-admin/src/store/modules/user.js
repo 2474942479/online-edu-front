@@ -36,7 +36,7 @@ const user = {
         login(username, userInfo.password).then(response => {
           setToken(response.data)
           commit('SET_TOKEN', response.data)
-          console.log("token:",response.data)
+          // console.log("token:",response.data)
           resolve()
         }).catch(error => {
           reject(error)
@@ -50,7 +50,7 @@ const user = {
         getInfo(state.token).then(response => {
           // debugger
           const data = response.data
-          console.log("userINfo:",data)
+          // console.log("userINfo:",data)
           if (data.roleNameList && data.roleNameList.length > 0) { // 验证返回的roles是否是一个非空数组
             commit('SET_ROLES', data.roleNameList)
             //console.log(data.roles)
@@ -68,7 +68,7 @@ const user = {
           commit('SET_BUTTONS', buttonAuthList)
           resolve(response)
         }).catch(error => {
-          console.log("error:", error)
+          // console.log("error:", error)
           reject("获取用户失败")
         })
       })

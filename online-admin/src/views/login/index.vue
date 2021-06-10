@@ -95,7 +95,7 @@ export default {
             this.loading = false
           })
         } else {
-          console.log('格式验证未通过!')
+          // console.log('格式验证未通过!')
           return false
         }
       })

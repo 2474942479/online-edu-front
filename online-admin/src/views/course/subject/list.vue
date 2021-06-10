@@ -219,7 +219,7 @@ export default {
           inputPlaceholder: response.title,
         })
           .then(({ value }) => {
-            console.log(response);
+            // console.log(response);
 
             this.subjectDTO.id = id;
             this.subjectDTO.title = value;

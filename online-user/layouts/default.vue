@@ -13,18 +13,18 @@
             <router-link to="/" tag="li" active-class="current" exact>
               <a>首页</a>
             </router-link>
+            <router-link to="/teacher" tag="li" active-class="current">
+              <a>外教</a>
+            </router-link>
             <router-link to="/course" tag="li" active-class="current">
               <a>课程</a>
             </router-link>
-            <router-link to="/teacher" tag="li" active-class="current">
-              <a>名师</a>
+            <router-link to="/#" tag="li" active-class="current">
+              <a>关于</a>
             </router-link>
-            <!-- <router-link to="/article" tag="li" active-class="current">
-              <a>文章</a>
+            <router-link to="/#" tag="li" active-class="current">
+              <a>商务合作</a>
             </router-link>
-            <router-link to="/qa" tag="li" active-class="current">
-              <a>问答</a>
-            </router-link>-->
           </ul>
           <!-- / nav -->
           <ul class="h-r-login">
@@ -115,12 +115,8 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item
-              label="年龄"
-              prop="age"
-              :label-width="drawer_width"
-            >
-              <el-input v-model.number="userDTO.age"/>
+            <el-form-item label="年龄" prop="age" :label-width="drawer_width">
+              <el-input v-model.number="userDTO.age" />
             </el-form-item>
             <el-form-item label="登录密码" :label-width="drawer_width">
               <el-input :disabled="true" type="text" v-model="password" style="width:73%" />
@@ -301,7 +297,9 @@
           </el-form-item>
           <el-form-item label="验证码" :label-width="drawer_width" prop="code">
             <el-input type="text" v-model.number="resetDTO.code" autocomplete="off"></el-input>
-            <el-link @click="sendCode" :underline="false">{{codeText}}</el-link>
+            <el-link @click="sendCode" :underline="false">
+              <el-tag style="font-size:15px;height:33px;">{{codeText}}</el-tag>
+            </el-link>
           </el-form-item>
         </el-form>
 
@@ -538,21 +536,21 @@ export default {
     };
 
     var checkAge = (rule, value, callback) => {
-        if (!value) {
-          return callback(new Error('年龄不能为空'));
-        }
-        setTimeout(() => {
-          if (!Number.isInteger(value)) {
-            callback(new Error('请输入数字值'));
+      if (!value) {
+        return callback(new Error("年龄不能为空"));
+      }
+      setTimeout(() => {
+        if (!Number.isInteger(value)) {
+          callback(new Error("请输入数字值"));
+        } else {
+          if (value < 0 || value > 99) {
+            callback(new Error("年龄必须在0 - 100岁之间"));
           } else {
-            if (value < 0 || value > 99) {
-              callback(new Error('年龄必须在0 - 100岁之间'));
-            } else {
-              callback();
-            }
+            callback();
           }
-        }, 10);
-      };
+        }
+      }, 10);
+    };
 
     return {
       page: 1,
@@ -585,7 +583,7 @@ export default {
         checkPass: [{ validator: validateCheckPass, trigger: "blur" }],
         oldPass: [{ validator: validateOldPass, trigger: "blur" }],
         mobile: [{ validator: mobile, trigger: "blur" }],
-        age: [{validator: checkAge, trigger: "blur"}]
+        age: [{ validator: checkAge, trigger: "blur" }],
       },
       options: [
         {

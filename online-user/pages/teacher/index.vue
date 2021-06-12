@@ -4,7 +4,7 @@
     <section class="container">
       <header class="comm-title all-teacher-title">
         <h2 class="fl tac">
-          <span class="c-333">全部讲师</span>
+          <span class="c-333">全部外教</span>
         </h2>
         <section class="c-tab-title">
           <a id="subjectAll" title="全部" href="#">全部</a>

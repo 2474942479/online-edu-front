@@ -25,18 +25,22 @@
         </article>
         <aside class="c-attr-wrap" >
           <section class="ml20 mr15">
-            <h2 class="hLh30 txtOf mt15">
-              <span class="c-fff fsize24" style="margin-left:123px;font-size:25px">{{courseBaseInfo.title}}</span>
+            <h2 class="hLh30 txtOf mt15" style="text-align:center;">
+              <span class="c-fff fsize24" style="font-size:25px">{{courseBaseInfo.title}}</span>
             </h2>
             <section class="c-attr-jg" style="margin-top:14px">
-              <span class="c-fff" style="font-size:25px">价格：</span>
-              <b class="c-yellow" style="font-size:20px;">￥{{courseBaseInfo.price}}</b>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <span
+              <div style="display:inline-block">
+                <span class="c-fff" style="font-size:25px">价格：</span>
+                <span class="c-yellow" style="font-size:20px;">￥{{courseBaseInfo.price}}</span>
+              </div>
+              <div style="display:inline-block;margin-left:50px">
+                <span
                 class="c-fff"
                 style="font-size:25px"
               >优惠：</span>
-              <b class="c-yellow" style="font-size:20px;">￥{{courseBaseInfo.reductionMoney}}</b>
+              <span class="c-yellow" style="font-size:20px;">￥{{courseBaseInfo.reductionMoney}}</span>
+              </div>       
+              
             </section>
 
             <section class="c-attr-mt c-attr-undis">
@@ -48,10 +52,10 @@
                 <a class="c-fff vam" title="收藏" href="#" style="font-size:25px">收藏</a>
               </span>
             </section>
-            <section class="c-attr-mt" v-if="Number(courseBaseInfo.price) == 0 || this.isBuy">
-              <a href="#" title="立即观看" class="comm-btn c-btn-3" style="margin-left:70px;">立即观看</a>
+            <section class="c-attr-mt" v-if="Number(courseBaseInfo.price) == 0 || this.isBuy" style="text-align:center">
+              <a href="#" title="立即观看" class="comm-btn c-btn-3">立即观看</a>
             </section>
-            <section class="c-attr-mt" v-else>
+            <section class="c-attr-mt" style="text-align:center" v-else>
               <a
                 href="#"
                 @click="buyCourse()"

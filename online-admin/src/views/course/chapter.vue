@@ -76,7 +76,7 @@
                       <div class="bottom clearfix">
                         <div style="font-size: 20px" class="contentRow">
                           <img
-                            src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+                            src="https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg"
                             style=" width: 100px;display: inline; border-radius: 5px"
                           />
                           <span class="contentRowChild">
@@ -84,7 +84,7 @@
                             <el-divider direction="vertical"></el-divider>
                             <el-tag type="success" v-if="video.isFree" size="medium">免费</el-tag>
                             <el-tag type="danger" v-if="!video.isFree" size="medium">收费</el-tag>
-                            <el-divider direction="vertical"></el-divider>
+                            <el-divider direction="vertical" v-if="video.videoOriginalName"></el-divider>
                             <el-tooltip
                               effect="dark"
                               placement="bottom"
@@ -100,7 +100,7 @@
                               </div>
                               <el-tag>{{video.videoOriginalName}}</el-tag>
                             </el-tooltip>
-                            <div>简介: {{ video.description }}</div>
+                            <div v-if="video.description">简介: {{ video.description }}</div>
                           </span>
 
                           <span class="btnGroup">

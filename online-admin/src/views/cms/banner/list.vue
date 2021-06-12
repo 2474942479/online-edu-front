@@ -79,7 +79,7 @@
             :append-to-body="true"
             style="text-align: center;"
           >
-            <h1>编辑信息</h1>
+            <h1>详情信息</h1>
             <div class="demo-drawer__content">
               <el-form :model="bannerInfo">
                 <el-form-item label="标题" :label-width="formLabelWidth" style=" font-size: 15px">

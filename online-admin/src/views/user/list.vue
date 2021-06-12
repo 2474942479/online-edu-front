@@ -51,15 +51,15 @@
           <el-avatar :size="60" :src="scope.row.avatar"></el-avatar>
         </template>
       </el-table-column>
-      <el-table-column prop="nickname" label="昵称" width="200" align="center"></el-table-column>
-      <el-table-column prop="mobile" label="手机号" width="200" align="center"></el-table-column>
+      <el-table-column prop="nickname" label="昵称" width="250" align="center"></el-table-column>
+      <el-table-column prop="mobile" label="手机号" width="250" align="center"></el-table-column>
       <el-table-column label="性别" width="150" align="center">
         <!-- scope代表整个表格 scope.row 代表每行     ==判断值  ===判断类型和值 -->
         <template slot-scope="scope">{{scope.row.sex=== 0 ?'未知' : (scope.row.sex=== 1 ? '男':'女')}}</template>
       </el-table-column>
       <el-table-column prop="age" label="年龄" width="150" align="center"></el-table-column>
 
-      <el-table-column label="加入时间" width="180" align="center">
+      <el-table-column label="加入时间" width="250" align="center">
         <template slot-scope="scope">
           <i class="el-icon-time"></i>
           <span style="margin-left: 10px">{{ scope.row.gmtCreate }}</span>

@@ -312,7 +312,8 @@
       </el-dialog>
 
       <el-drawer
-        title="购买记录!"
+        title="购买记录"
+        style="font-size:20px"
         :visible.sync="orderDrawer"
         direction="rtl"
         size="40%"

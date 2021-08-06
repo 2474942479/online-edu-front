@@ -1,15 +1,20 @@
 <template>
   <div class="cart py-container">
+    <el-steps :active="3" finish-status="success" simple style="margin-top: 20px">
+      <el-step title="购买课程"></el-step>
+      <el-step title="确认订单"></el-step>
+      <el-step title="支付订单"></el-step>
+    </el-steps>
     <!--主内容-->
     <div class="checkout py-container pay">
       <div class="checkout-tit">
         <h4 class="fl tit-txt">
           <span class="success-icon"></span>
-          <span class="success-info">订单提交成功，请您及时付款！订单号：{{payObj.orderNumber}}</span>
+          <span class="success-info">订单提交成功，请您及时付款！订单号：{{wxCodeVO.orderNumber}}</span>
         </h4>
         <span class="fr">
           <em class="sui-lead">应付金额：</em>
-          <em class="orange money">￥{{payObj.payMoney}}</em>
+          <em class="orange money">￥{{wxCodeVO.payMoney}}</em>
         </span>
         <div class="clearfix"></div>
       </div>
@@ -20,7 +25,7 @@
           <div class="fl code">
             <!-- <img id="qrious" src="~/assets/img/erweima.png" alt=""> -->
             <!-- <qriously value="weixin://wxpay/bizpayurl?pr=R7tnDpZ" :size="338"/> -->
-            <qriously :value="payObj.code_url" :size="338" />
+            <qriously :value="wxCodeVO.code_url" :size="338" />
             <div class="saosao">
               <p>请使用微信扫一扫</p>
               <p>扫描二维码支付</p>
@@ -39,9 +44,9 @@ import orderApi from "@/api/order";
 export default {
   //根据订单id生成微信支付二维码  params取路径参数: 页面名为_** 取值为params.**
   asyncData({ params, error }) {
-    return payApi.createNative(params.pid).then((response) => {
+    return payApi.createWxCode(params.pid).then((response) => {
       return {
-        payObj: response.data.data,
+        wxCodeVO: response.data.data,
       };
     });
   },
@@ -55,7 +60,7 @@ export default {
     //在页面渲染之后执行
     //每隔三秒，去查询一次支付状态
     this.timer = setInterval(() => {
-      this.selectPayStatus(this.payObj.orderNumber);
+      this.selectPayStatus(this.wxCodeVO.orderNumber);
     }, 3000);
   },
 
@@ -68,11 +73,11 @@ export default {
         type: "warning",
       })
         .then(() => {
-          orderApi.removeOrder(this.payObj.orderNumber).then((response) => {
+          orderApi.removeOrder(this.wxCodeVO.orderNumber).then((response) => {
             clearInterval(this.timer);
             this.$message({
               type: "error",
-              message: response.data.message,
+              message: "已取消该笔订单",
             });
             next();
           });
@@ -96,7 +101,7 @@ export default {
             message: response.data.message,
           });
           //跳转到课程详情页面观看视频
-          window.location.href="/course/" + this.payObj.courseId 
+          window.location.href = "/course/" + this.wxCodeVO.courseId;
           // window.setTimeout=("window.location='/login'",3000)
         }
       });

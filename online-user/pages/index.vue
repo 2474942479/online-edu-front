@@ -1,20 +1,18 @@
 <template>
   <div>
     <!-- 幻灯片 开始 -->
-    <div v-swiper:mySwiper="swiperOption">
-      <div class="swiper-wrapper">
-        <!-- 遍历bannerList -->
-        <div v-for="banner in bannerList" :key="banner.id" class="swiper-slide" style="background: #040B1B;">
-          <a target="_blank" :href="banner.linkUrl">
-            <img :src="banner.imageUrl" :alt="banner.title" />
-          </a>
-        </div>
-        
-      </div>
-      <div class="swiper-pagination swiper-pagination-white"></div>
-      <div class="swiper-button-prev swiper-button-white" slot="button-prev"></div>
-      <div class="swiper-button-next swiper-button-white" slot="button-next"></div>
+    <div>
+      <template>
+        <el-carousel :interval="4000" type="card">
+          <el-carousel-item v-for="banner in bannerList" :key="banner.id">
+            <a target="_blank" :href="banner.linkUrl">
+              <img :src="banner.imageUrl" :alt="banner.title" width="100%" />
+            </a>
+          </el-carousel-item>
+        </el-carousel>
+      </template>
     </div>
+
     <!-- 幻灯片 结束 -->
 
     <div id="aCoursesList">
@@ -32,17 +30,17 @@
                 <li v-for="course in courseList" :key="course.id">
                   <div class="cc-l-wrap">
                     <section class="course-img">
-                      <img
-                        :src="course.cover"
-                        class="img-responsive"
-                        :alt="course.title"
-                      />
+                      <img :src="course.cover" class="img-responsive" :alt="course.title" />
                       <div class="cc-mask">
                         <a :href="'/course/'+course.id" title="开始学习" class="comm-btn c-btn-1">开始学习</a>
                       </div>
                     </section>
                     <h3 class="hLh30 txtOf mt10">
-                      <a :href="'/course/'+course.id" :title="course.title" class="course-title fsize18 c-333">{{course.title}}</a>
+                      <a
+                        :href="'/course/'+course.id"
+                        :title="course.title"
+                        class="course-title fsize18 c-333"
+                      >{{course.title}}</a>
                     </h3>
                     <section class="mt10 hLh20 of">
                       <!-- 判断价格是否为0  是则显示免费 否则不显示 Number内置函数   -->
@@ -82,19 +80,21 @@
                   <section class="i-teach-wrap">
                     <div class="i-teach-pic">
                       <a :href="'/teacher/'+teacher.id" :title="teacher.name">
-                        <img :alt="teacher.name" :src="teacher.avatar" />
+                        <img class="teach_img" :alt="teacher.name" :src="teacher.avatar" />
                       </a>
                     </div>
                     <div class="mt10 hLh30 txtOf tac">
-                      <a :href="'/teacher/'+teacher.id" :title="teacher.name" class="fsize18 c-666">{{teacher.name}}</a>
+                      <a
+                        :href="'/teacher/'+teacher.id"
+                        :title="teacher.name"
+                        class="fsize18 c-666"
+                      >{{teacher.name}}</a>
                     </div>
                     <div class="hLh30 txtOf tac">
                       <span class="fsize14 c-999">{{teacher.career}}</span>
                     </div>
                     <div class="mt15 i-q-txt">
-                      <p
-                        class="c-999 f-fA"
-                      >{{teacher.intro}}</p>
+                      <p class="c-999 f-fA">{{teacher.intro}}</p>
                     </div>
                   </section>
                 </li>
@@ -113,17 +113,14 @@
 </template>
 
 <script>
-
-import banner from '@/api/indexInfo'
+import banner from "@/api/indexInfo";
 
 export default {
   data() {
     return {
-
-      bannerList:[],
-      courseList:[],
-      teacherList:[],
-
+      bannerList: [],
+      courseList: [],
+      teacherList: [],
 
       swiperOption: {
         //配置分页
@@ -136,30 +133,34 @@ export default {
           prevEl: ".swiper-button-prev", //前一页dom节点
         },
       },
-
     };
   },
 
-  created(){
-    this.getList()
+  created() {
+    this.getList();
   },
 
-  methods:{
-
-    getList(){
-      banner.getIndexInfo()
-      .then(response =>{
-        // 获取数据通过response.data    .data.list
-        this.bannerList = response.data.data.bannerList
-        this.courseList = response.data.data.courseList 
-        this.teacherList = response.data.data.teacherList   
-      })
-    }
-
-
-  }
-
-
-
+  methods: {
+    getList() {
+      banner.getIndexInfo().then((response) => {
+        this.bannerList = response.data.data.bannerList;
+        this.courseList = response.data.data.courseList;
+        this.teacherList = response.data.data.teacherList;
+      });
+    },
+  },
 };
 </script>
+
+<style>
+.el-carousel__item:nth-child(2n) {
+    background-color: #99a9bf;
+  }
+  
+  .el-carousel__item:nth-child(2n+1) {
+    background-color: #d3dce6;
+  }
+  .teach_img:hover{
+    transform: rotateY(360deg);
+  }
+</style>

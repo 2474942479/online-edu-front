@@ -15,14 +15,13 @@
 
 import roleApi from '@/api/acl/role'
 
-const defaultForm = {
-  roleName: ''
-}
 
 export default {
   data() {
     return {
-      role: defaultForm,
+      role: {
+          roleName: ''
+        },
       saveBtnDisabled: false, // 保存按钮是否禁用,
       validateRules: {
         roleName: [{ required: true, trigger: 'blur', message: '角色名必须输入' }]
@@ -33,16 +32,12 @@ export default {
   // 监听器
   watch: {
     $route(to, from) {
-      console.log('路由变化......')
-      console.log(to)
-      console.log(from)
       this.init()
     }
   },
 
   // 生命周期方法（在路由切换，组件不变的情况下不会被调用）
   created() {
-    console.log('form created ......')
     this.init()
   },
 
@@ -50,7 +45,7 @@ export default {
 
     // 表单初始化
     init() {
-      debugger
+      // debugger
       if (this.$route.params && this.$route.params.id) {
         const id = this.$route.params.id
         this.fetchDataById(id)
@@ -73,14 +68,13 @@ export default {
       })
     },
 
-    // 新增讲师
     saveData() {
       roleApi.save(this.role).then(response => {
         // debugger
         if (response.success) {
           this.$message({
             type: 'success',
-            message: response.message
+           message:'添加成功'
           })
           this.$router.push({ path: '/acl/role/list' })
         }
@@ -94,7 +88,7 @@ export default {
         if (response.success) {
           this.$message({
             type: 'success',
-            message: response.message
+            message:'修改成功'
           })
           this.$router.push({ path: '/acl/role/list' })
         }
@@ -103,9 +97,8 @@ export default {
 
     // 根据id查询记录
     fetchDataById(id) {
-      roleApi.getById(id).then(response => {
-        debugger
-        this.role = response.data.item
+      roleApi.getById(id).then(response => { 
+        this.role = response.data
       })
     }
 

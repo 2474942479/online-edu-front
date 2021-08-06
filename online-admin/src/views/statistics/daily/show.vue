@@ -8,7 +8,7 @@
           type="daterange"
           align="right"
           unlink-panels
-          range-separator="至"
+          range-separator="——"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
           :picker-options="pickerOptions"
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import echarts from "echarts";
+import * as echarts from "echarts";
 import statistics from "@/api/edu/statistics";
 export default {
   data() {
@@ -74,16 +74,14 @@ export default {
   },
   watch: {
     dateRange(newVal, oldVal) {
-      console.log(newVal, oldVal);
       if (newVal === null) {
         this.dateRange = [];
       }
     },
   },
 
-  created(){
-
-    this.showChart()
+  created() {
+    this.showChart();
   },
   methods: {
     showChart() {
@@ -95,11 +93,16 @@ export default {
       this.begin = this.dateRange[0];
       this.end = this.dateRange[1];
       statistics.show(this.begin, this.end).then((response) => {
-        this.xAxisData = response.data.xAxisData;
-        this.registerData = response.data.registerData;
-        this.loginData = response.data.loginData;
-        this.courseData = response.data.courseData;
-        this.videoData = response.data.videoData;
+        response.data.forEach((data) => {
+          this.xAxisData.push(data.dateCalculated);
+          this.registerData.push(data.registerNum);
+          this.loginData.push(data.loginNum);
+          this.videoData.push(data.videoViewNum);
+          this.courseData.push(data.courseNum);
+        });
+
+        // console.log(this.xAxisData);
+
         this.setChart();
       });
     },
@@ -108,7 +111,6 @@ export default {
     setChart() {
       // 基于准备好的dom，初始化echarts实例
       this.chart = echarts.init(document.getElementById("chart"));
-      // console.log(this.chart)
 
       // 指定图表的配置项和数据
       var option = {
@@ -161,7 +163,7 @@ export default {
             height: 30,
             xAxisIndex: [0],
             bottom: 30,
-            start: 98,
+            start: 0,
             end: 100,
             handleIcon:
               "path://M306.1,413c0,2.2-1.8,4-4,4h-59.8c-2.2,0-4-1.8-4-4V200.8c0-2.2,1.8-4,4-4h59.8c2.2,0,4,1.8,4,4V413z",

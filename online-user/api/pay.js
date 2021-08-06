@@ -3,9 +3,9 @@ import request from '@/utils/request'
 export default {
 
     // 生成支付二维码
-    createNative(orderNumber) {
+    createWxCode(orderNumber) {
         return request({
-          url: `/orderService/payLog/createNative/${orderNumber}`,
+          url: `/orderService/payLog/createWxCode/${orderNumber}`,
           method: 'get'
         })
       },

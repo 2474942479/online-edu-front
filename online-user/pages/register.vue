@@ -103,7 +103,10 @@
 <script>
 import "~/assets/css/sign.css";
 import "~/assets/css/iconfont.css";
+import loginApi from "@/api/login";
 import registerApi from "@/api/register";
+import msmApi from "@/api/msm";
+import cookie from "js-cookie";
 
 export default {
   layout: "sign",
@@ -124,25 +127,33 @@ export default {
   methods: {
     //   获取验证码
     getCode() {
+      if (!this.registerInfo.mobile) {
+        this.$notify.error({
+          title: "错误",
+          message: "手机号不能为空",
+        });
+        return;
+      }
+
       if (!this.sendBtnDisabled) {
         return;
       }
-      //      按钮不可用
+      // 按钮不可用
       this.sendBtnDisabled = false;
-      //         开始倒计时
+      // 开始倒计时
       this.timeDown();
-      registerApi
+      msmApi
         .sendCodeByMobile(this.registerInfo.mobile)
         .then((response) => {
           // 提示信息
           this.$message({
-            type: 'success',
-            message: response.data.message,
+            type: "success",
+            message: "验证码发送成功",
           });
         })
         .catch((response) => {
           this.$message({
-            type: 'error',
+            type: "error",
             message: response.data.message,
           });
         });
@@ -152,7 +163,7 @@ export default {
     timeDown() {
       let result = setInterval(() => {
         this.second--;
-        this.codeText = this.second+"秒后重新发送";
+        this.codeText = this.second + "秒后重新发送";
         if (this.second < 1) {
           clearInterval(result);
           this.sendBtnDisabled = true;
@@ -169,17 +180,41 @@ export default {
           // 提示注册成功
           this.$message({
             type: "success",
-            message: response.data.message,
+            message: "注册成功, 请登录!",
           });
           // 跳转到登录页面
-          this.$router.push({ path: "/login" });
+          this.login();
         })
         .catch((response) => {
           this.$message({
-            type: 'error',
+            type: "error",
             message: response.data.message,
           });
         });
+    },
+
+    login() {
+      // 第一步 调用接口返回token字符串
+      loginApi.login(this.registerInfo).then((response) => {
+        // 第二步 将返回的token字符串放到cookie中
+        // 三个参数 1 cookie中参数名 2 参数对应的值 3 作用范围
+        cookie.set("token", response.data.data, { domain: "localhost" });
+        // 第三步 request.js中添加拦截器
+        // 调用接口 根据token中的id获取用户信息 在首页展示
+        loginApi.getUserInfoByToken().then((response) => {
+          // console.log(response.data)
+          // 获取用户信息放到cookie中
+          cookie.set("userInfo", response.data.data, { domain: "localhost" });
+
+          // js跳转主页面
+          window.location.href = "/";
+        });
+
+        this.$message({
+          type: "success",
+          message: "登录成功",
+        });
+      });
     },
 
     checkPhone(rule, value, callback) {

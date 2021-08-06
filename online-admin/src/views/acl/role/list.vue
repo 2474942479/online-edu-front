@@ -3,7 +3,7 @@
     <!--查询表单-->
     <el-form :inline="true" class="demo-form-inline">
       <el-form-item>
-        <el-input v-model="searchObj.roleName" placeholder="角色名称" />
+        <el-input v-model="roleQueryDTO.roleName" placeholder="角色名称" />
       </el-form-item>
 
       <el-button type="primary" icon="el-icon-search" @click="fetchData()">查询</el-button>
@@ -34,7 +34,7 @@
 
       <el-table-column label="操作" width="300" align="center">
         <template slot-scope="scope">
-          <router-link :to="'/acl/role/distribution/'+scope.row.id">
+          <router-link :to="'/acl/role/getRolePermission/'+scope.row.id">
             <el-button type="info" size="mini" icon="el-icon-plus" v-if="hasPerm('role.acl')">授权</el-button>
           </router-link>
           <router-link :to="'/acl/role/update/'+scope.row.id">
@@ -76,26 +76,24 @@ export default {
       total: 0, // 数据库中的总记录数
       page: 1, // 默认页码
       limit: 10, // 每页记录数
-      searchObj: {}, // 查询表单对象
+      roleQueryDTO: {}, // 查询表单对象
       multipleSelection: [], // 批量选择中选择的记录列表
     };
   },
 
   // 生命周期函数：内存准备完毕，页面尚未渲染
   created() {
-    console.log("list created......");
     this.fetchData();
   },
 
   // 生命周期函数：内存准备完毕，页面渲染成功
   mounted() {
-    console.log("list mounted......");
   },
 
   methods: {
     // 当页码发生改变的时候
     changeSize(size) {
-      console.log(size);
+      // console.log(size);
       this.limit = size;
       this.fetchData(1);
     },
@@ -104,16 +102,16 @@ export default {
       this.$router.push({ path: "/acl/role/add" });
     },
 
-    // 加载讲师列表数据
+    // 加载角色列表数据
     fetchData(page = 1) {
-      console.log("翻页。。。" + page);
       // 异步获取远程数据（ajax）
-      this.page = page;
+      this.roleQueryDTO.currentx = page
+      this.roleQueryDTO.size = this.limit
 
       roleApi
-        .getPageList(this.page, this.limit, this.searchObj)
+        .getPageList(this.roleQueryDTO)
         .then((response) => {
-          this.list = response.data.items;
+          this.list = response.data.records;
           this.total = response.data.total;
 
           // 数据加载并绑定成功
@@ -123,8 +121,8 @@ export default {
 
     // 重置查询表单
     resetData() {
-      console.log("重置查询表单");
-      this.searchObj = {};
+      // console.log("重置查询表单");
+      this.roleQueryDTO = {};
       this.fetchData();
     },
 
@@ -160,14 +158,14 @@ export default {
 
     // 当表格复选框选项发生变化的时候触发
     handleSelectionChange(selection) {
-      console.log("handleSelectionChange......");
-      console.log(selection);
+      // console.log("handleSelectionChange......");
+      // console.log(selection);
       this.multipleSelection = selection;
     },
 
     // 批量删除
     removeRows() {
-      console.log("removeRows......");
+      // console.log("removeRows......");
 
       if (this.multipleSelection.length === 0) {
         this.$message({
@@ -215,8 +213,8 @@ export default {
     // queryString：文本框中输入的值
     // cb：一个函数
     querySearch(queryString, cb) {
-      console.log(queryString);
-      console.log(cb);
+      // console.log(queryString);
+      // console.log(cb);
 
       // teacher.selectNameByKey(queryString).then(response => {
       //   // 调用 callback 返回建议列表的数据

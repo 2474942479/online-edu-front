@@ -13,7 +13,7 @@ function filterAsyncRouter(asyncRouterMap) { // 遍历后台传来的路由字�
         } else {
           const component = route.component
           route.component = resolve => {
-            console.log(['@/views' + component + '.vue'])
+            // console.log(['@/views' + component + '.vue'])
             require(['@/views' + component + '.vue'], resolve)
           }
         }
@@ -46,9 +46,8 @@ const actions = {
     // 取后台路由
 
     const asyncRouter = await getMenu()
-
     return new Promise(resolve => {
-      const tmp = asyncRouter.data.permissionList
+      const tmp = asyncRouter.data
       const accessedRoutes = filterAsyncRouter(tmp)
 
       commit('SET_ROUTES', accessedRoutes)

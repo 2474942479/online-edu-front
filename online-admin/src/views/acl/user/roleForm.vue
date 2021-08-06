@@ -2,8 +2,8 @@
   <div class="app-container">
     <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
     <div style="margin: 15px 0;"></div>
-    <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-        <el-checkbox v-for="city in cities" :label="city.id" :key="city.id">{{city.roleName}}</el-checkbox>
+    <el-checkbox-group v-model="assignRoleList" @change="handleCheckedCitiesChange">
+        <el-checkbox v-for="role in roleList" :label="role.id" :key="role.id">{{role.roleName}}</el-checkbox>
     </el-checkbox-group>
     <br>
     <el-button :disabled="saveBtnDisabled" type="primary" @click="update">保存</el-button>
@@ -15,14 +15,12 @@
 
 import userApi from '@/api/acl/user'
 
-//const cityOptions = ['上海', '北京', '广州', '深圳'];
-
 export default {
   data() {
       return {
         checkAll: false,
-        checkedCities: [], //已选中
-        cities: [], //所有的
+        assignRoleList: [], //已选中
+        roleList: [], //所有的
         isIndeterminate: true,
         userId:'',
         saveBtnDisabled: false // 保存按钮是否禁用,
@@ -40,9 +38,8 @@ export default {
       },
       getById(userId){
           userApi.getAssign(userId).then(response => {
-              var jsonObj = response.data.assignRoles
-              this.checkedCities = this.getJsonToList(jsonObj,"id")
-              this.cities = response.data.allRolesList
+              this.assignRoleList = this.getJsonToList(response.data.assignRoleList,"id")
+              this.roleList = response.data.roleList
           })
       },
       //把json数据转成string再转成对象，根据Key获取value数据
@@ -60,19 +57,18 @@ export default {
         
       },
       handleCheckAllChange(val) {
-        this.checkedCities = val ? this.cities : [];
+        this.assignRoleList = val ? this.roleList : [];
         this.isIndeterminate = false;
       },
       handleCheckedCitiesChange(value) {
       
         let checkedCount = value.length;
-        this.checkAll = checkedCount === this.cities.length;
-        this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length;
+        this.checkAll = checkedCount === this.roleList.length;
+        this.isIndeterminate = checkedCount > 0 && checkedCount < this.roleList.length;
       },
       update(){
-        this.saveBtnDisabled = true // 防止表单重复提交
-        var ids = this.checkedCities.join(",")
-        console.log(ids)
+        this.saveBtnDisabled = true // 防止表单重复提交  
+        var ids = this.assignRoleList.join(",")
         //修改权限
         userApi.saveAssign(this.userId, ids).then(response => {
             if(response.success){

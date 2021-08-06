@@ -45,7 +45,7 @@
           :width="300"
           :height="300"
           :key="imagecropperKey"
-          :url="BASE_API+'/eduOss/fileOss/uploadAvatar'"
+          :url="BASE_API+'/eduService/oss/upload2Oss'"
           field="file"
           @close="close"
           @crop-upload-success="cropSuccess"
@@ -53,7 +53,7 @@
       </el-form-item>
 
       <el-form-item style="text-align: center;">
-        <el-button :disabled="saveBtnDisabled" type="primary" @click="addOrEdit">保存</el-button>
+        <el-button :disabled="saveBtnDisabled" type="primary" @click="saveOrUpdateTeacher">保存</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -79,8 +79,7 @@ export default {
       imagecropperKey: 0,
       // 上传组件是否显示
       imagecropperShow: false,
-      teacherInfo: {
-      },
+      teacherInfo: {},
       saveBtnDisabled: false,
     };
   },
@@ -112,12 +111,12 @@ export default {
       }
     },
 
-    add() {
-      teacher.addTeacher(this.teacherInfo).then((response) => {
+    saveOrUpdateTeacher() {
+      teacher.saveOrUpdateTeacher(this.teacherInfo).then((response) => {
         // 1 提示添加成功
         this.$message({
           type: "success",
-          message: "添加成功!",
+          message: "保存成功!",
         });
         // 2 跳转到列表页面 路由跳转
         this.$router.push({ path: "/teacher/list" });
@@ -130,28 +129,6 @@ export default {
       });
     },
 
-    edit() {
-      teacher.uptateTeacher(this.teacherInfo).then((response) => {
-        // 1 提示修改成功
-        this.$message({
-          type: "success",
-          message: "修改成功!",
-        });
-        // 2 跳转到列表页面 路由跳转
-        this.$router.push({ path: "/teacher/list" });
-      });
-    },
-
-    addOrEdit() {
-      // 根据teacher中是否有id这个字段判断是修改还是添加
-      // 有id字段代表修改  无代表添加（添加会自动生成id）
-
-      if (!this.teacherInfo.id) {
-        this.add();
-      } else {
-        this.edit();
-      }
-    },
 
     // 关闭上传弹框的方法
     close() {
@@ -163,7 +140,7 @@ export default {
     // 上传成功的方法  data是封装后的response.data
     cropSuccess(data) {
       // 上传之后接口返回图片地址url
-      this.teacherInfo.avatar = data.url;
+      this.teacherInfo.avatar = data;
       this.imagecropperShow = false;
       // 上传成功后，重新打开上传组件时初始化组件，否则显示上一次的上传结果
       this.imagecropperKey = this.imagecropperKey + 1;

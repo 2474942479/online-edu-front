@@ -5,48 +5,57 @@
       <section class="path-wrap txtOf hLh30">
         <a href="/" title class="c-999 fsize14">首页</a>
         \
-        <a href="/course" title class="c-999 fsize14">课程列表</a>
+        <a href="/course" title class="c-999 fsize14">课程</a>
+        \
+        <span class="c-333 fsize14">{{subjectName}}</span>
         \
         <span class="c-333 fsize14">{{courseBaseInfo.title}}</span>
       </section>
       <div>
         <article class="c-v-pic-wrap" style="height: 357px;">
           <section class="p-h-video-box" id="videoPlay">
-            <img
-              height="357px"
-              width="640px"
+            <el-image
+              style="width: 300px; height: 357px"
               :src="courseBaseInfo.cover"
               :alt="courseBaseInfo.title"
               class="dis c-v-pic"
+              fit="contain"
             />
           </section>
         </article>
-        <aside class="c-attr-wrap">
+        <aside class="c-attr-wrap" >
           <section class="ml20 mr15">
-            <h2 class="hLh30 txtOf mt15">
-              <span class="c-fff fsize24">{{courseBaseInfo.title}}</span>
+            <h2 class="hLh30 txtOf mt15" style="text-align:center;">
+              <span class="c-fff fsize24" style="font-size:25px">{{courseBaseInfo.title}}</span>
             </h2>
-            <section class="c-attr-jg">
-              <span class="c-fff">价格：</span>
-              <b class="c-yellow" style="font-size:24px;">￥{{courseBaseInfo.price}}</b>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <span class="c-fff">优惠：</span>
-              <b class="c-yellow" style="font-size:24px;">￥{{courseBaseInfo.reductionMoney}}</b>
+            <section class="c-attr-jg" style="margin-top:14px">
+              <div style="display:inline-block">
+                <span class="c-fff" style="font-size:25px">价格：</span>
+                <span class="c-yellow" style="font-size:20px;">￥{{courseBaseInfo.price}}</span>
+              </div>
+              <div style="display:inline-block;margin-left:50px">
+                <span
+                class="c-fff"
+                style="font-size:25px"
+              >优惠：</span>
+              <span class="c-yellow" style="font-size:20px;">￥{{courseBaseInfo.reductionMoney}}</span>
+              </div>       
+              
             </section>
-            
+
             <section class="c-attr-mt c-attr-undis">
-              <span class="c-fff fsize14">主讲人： {{courseBaseInfo.teacherName}}&nbsp;&nbsp;&nbsp;</span>
+              <span class="c-fff fsize14" style="font-size:25px">主讲人： {{courseBaseInfo.teacherName}}&nbsp;&nbsp;&nbsp;</span>
             </section>
             <section class="c-attr-mt of">
               <span class="ml10 vam">
                 <em class="icon18 scIcon"></em>
-                <a class="c-fff vam" title="收藏" href="#">收藏</a>
+                <a class="c-fff vam" title="收藏" href="#" style="font-size:25px">收藏</a>
               </span>
             </section>
-            <section class="c-attr-mt" v-if="Number(courseBaseInfo.price) == 0 || this.isBuy">
+            <section class="c-attr-mt" v-if="Number(courseBaseInfo.price) == 0 || this.isBuy" style="text-align:center">
               <a href="#" title="立即观看" class="comm-btn c-btn-3">立即观看</a>
             </section>
-            <section class="c-attr-mt" v-else>
+            <section class="c-attr-mt" style="text-align:center" v-else>
               <a
                 href="#"
                 @click="buyCourse()"
@@ -58,7 +67,7 @@
           </section>
         </aside>
         <aside class="thr-attr-box">
-          <ol class="thr-attr-ol ">
+          <ol class="thr-attr-ol">
             <li>
               <p>&nbsp;</p>
               <aside>
@@ -115,7 +124,7 @@
                   </h6>
                   <section class="mt20">
                     <div class="lh-menu-wrap">
-                      <menu id="lh-menu" class="lh-menu mt10 mr10">
+                      <menu id="lh-menu" class="lh-menu mt10 mr10" v-if="chapterAllInfo">
                         <ul>
                           <!-- 文件目录 -->
                           <li
@@ -124,26 +133,34 @@
                             :key="chapter.id"
                           >
                             <a href="javascript: void(0)" :title="chapter.title" class="current-1">
-                              <em class="lh-menu-i-1 icon18 mr10"></em>
+                              
                               {{chapter.title}}
                             </a>
                             <ol class="lh-menu-ol" style="display: block;">
                               <li
                                 class="lh-menu-second ml30"
-                                v-for="video in chapter.children"
+                                v-for="video in chapter.videoVOList"
                                 :key="video.id"
                               >
-                                <a
+                                <el-link
                                   :href="'/videos/'+video.videoSourceId"
-                                  :title="video.title"
                                   target="_blank"
+                                  :underline="false"
+                                  :disabled="!video.videoSourceId"
                                 >
-                                  <span class="fr">
+                                  <span class="fr" v-if="video.isFree">
                                     <i class="free-icon vam mr10">免费试听</i>
                                   </span>
-                                  <em class="lh-menu-i-2 icon16 mr5">&nbsp;</em>
+
+                                  <span class="fr" v-if="!video.isFree">
+                                    <i
+                                      class="free-icon vam mr10"
+                                      style="border:1px solid #ec0c17;border-radius: 20px;color: #ec0c17;"
+                                    >付费购买</i>
+                                  </span>
+                                  
                                   {{video.title}}
-                                </a>
+                                </el-link>
                               </li>
                             </ol>
                           </li>
@@ -321,30 +338,31 @@ export default {
       courseBaseInfo: {},
       chapterAllInfo: {},
       commentAllInfo: {},
-      isBuy:"",
+      isBuy: "",
       commentInfo: {},
       size: 5,
       orderInfo: {},
       checkOrderInfo: {},
+      commentQueryDTO: {},
+      subjectName: "",
     };
   },
 
   created() {
-    this.initCourseAllInfo()
+    this.initCourseAllInfo();
     this.initComment();
     this.getUserInfo();
-
   },
 
   methods: {
-
-    initCourseAllInfo(){
-      courseApi.getCourseAllInfo(this.$route.params.id).then((response) => {
-        this.courseId= this.$route.params.id,
-        this.courseBaseInfo = response.data.data.courseBaseInfo,
-        this.chapterAllInfo = response.data.data.chapterVoList,
-        this.isBuy = response.data.data.isBuy
-    });
+    initCourseAllInfo() {
+      courseApi.getCourseInfo(this.$route.params.id).then((response) => {
+        (this.courseId = this.$route.params.id),
+          (this.courseBaseInfo = response.data.data.courseVO),
+          (this.subjectName = response.data.data.subjectName);
+        (this.chapterAllInfo = response.data.data.chapterList),
+          (this.isBuy = response.data.data.isBuy);
+      });
     },
 
     // 从cookie获取信息
@@ -359,19 +377,20 @@ export default {
 
     // 初始化评论列表
     initComment() {
-      commentApi
-        .getCommentList(1, this.size, this.$route.params.id)
-        .then((response) => {
-          this.commentAllInfo = response.data.data;
-        });
+      this.commentQueryDTO.page = 1;
+      this.commentQueryDTO.size = this.size;
+      this.commentQueryDTO.courseId = this.$route.params.id;
+
+      commentApi.getCommentList(this.commentQueryDTO).then((response) => {
+        this.commentAllInfo = response.data.data;
+      });
     },
     // 评论翻页
     gotoPage(page) {
-      commentApi
-        .getCommentList(page, this.size, this.courseId)
-        .then((response) => {
-          this.commentAllInfo = response.data.data;
-        });
+      this.commentQueryDTO.page = page;
+      commentApi.getCommentList(this.commentQueryDTO).then((response) => {
+        this.commentAllInfo = response.data.data;
+      });
     },
 
     // 发表评论
@@ -384,7 +403,7 @@ export default {
       commentApi.saveComment(this.commentInfo).then((response) => {
         this.$message({
           type: "success",
-          message: response.data.message,
+          message: "评论发表成功",
         });
         this.commentInfo.content = "";
         this.initComment();
@@ -393,31 +412,35 @@ export default {
     // ------------------------------------购买课程--------------------------------------------------------
     // 1 创建订单
     buyCourse() {
-
+      this.orderInfo.orderChannel = 1;
+      this.orderInfo.orderType = 1;
       this.orderInfo.courseId = this.courseId;
       this.orderInfo.courseTitle = this.courseBaseInfo.title;
       this.orderInfo.courseCover = this.courseBaseInfo.cover;
+      this.orderInfo.teacherId = this.courseBaseInfo.teacherId;
       this.orderInfo.teacherName = this.courseBaseInfo.teacherName;
       this.orderInfo.userId = this.loginInfo.id;
       this.orderInfo.nickname = this.loginInfo.nickname;
       this.orderInfo.mobile = this.loginInfo.mobile;
       this.orderInfo.courseMoney = this.courseBaseInfo.price;
       this.orderInfo.reductionMoney = this.courseBaseInfo.reductionMoney;
-      this.orderInfo.payMoney = Number(this.courseBaseInfo.price)-Number(this.courseBaseInfo.reductionMoney)
+      this.orderInfo.payMoney =
+        Number(this.courseBaseInfo.price) -
+        Number(this.courseBaseInfo.reductionMoney);
 
-//    判断是否提交过 提交后点击提示错误信息
+      //    判断是否提交过 提交后点击提示错误信息
       if (this.disabled) {
-        this.disabled = false
+        this.disabled = false;
         orderApi
           .creatOrder(this.orderInfo)
           .then((response) => {
             this.$message({
               type: "success",
-              message: response.data.message,
+              message: "下单成功",
             });
             // 跳转确认订单页面
             this.$router.push({
-              path: "/order/" + response.data.data.orderNumber,
+              path: "/order/" + response.data.data,
             });
           })
           .catch((response) => {

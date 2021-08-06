@@ -5,7 +5,7 @@ export default {
     // 根据手机号获取验证码
     sendCodeByMobile(mobile) {
         return request({
-          url: `/eduMsm/msm/send/${mobile}`,
+          url: `/eduCms/msm/send/${mobile}`,
           method: 'get'
         })
       },

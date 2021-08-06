@@ -9,12 +9,14 @@ export default {
             method: 'get'
         })
     },
+
     removeById(id) {
         return request({
             url: `${api_name}/deleteAllById/${id}`,
             method: "delete"
         })
     },
+
     saveLevelOne(menu) {
         return request({
             url: `${api_name}/savePermission`,
@@ -22,6 +24,7 @@ export default {
             data: menu
         })
     },
+
     update(menu) {
         return request({
             url: `${api_name}/updatePermission`,

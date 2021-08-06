@@ -11,14 +11,14 @@
       <el-radio v-model="courseInfo.status" label="Normal">发布</el-radio>
     </div>
     <div class="ccInfo">
-      <img :src="finalreleaseInfo.cover" />
+      <img :src="finalreleaseInfo.cover" height="100%" width="100%"/>
       <div class="main">
         <h2>{{ finalreleaseInfo.title }}</h2>
         <p class="gray">
           <span>共{{ finalreleaseInfo.lessonNum }}课时</span>
         </p>
         <p>
-          <span>所属分类：{{ finalreleaseInfo.oneSubjectTitle }} — {{ finalreleaseInfo.twoSubjectTitle }}</span>
+          <span>所属分类：{{ finalreleaseInfo.subjectName }}</span>
         </p>
         <p class="gray">课程讲师：{{ finalreleaseInfo.teacherName }}</p>
         <h4 class="red">优惠:{{ Number(finalreleaseInfo.reductionMoney) }}￥</h4><br><br><br>
@@ -60,7 +60,7 @@ export default {
       finalrelease
         .getFinalRelease(this.courseInfo.id)
         .then((response) => {
-          this.finalreleaseInfo = response.data.finalReleaseVo;
+          this.finalreleaseInfo = response.data;
         });
     },
 
@@ -84,7 +84,7 @@ export default {
             .then((response) => {
               this.$message({
                 type: "success",
-                message: response.message,
+                message: "发布成功",
               });
               // 保存课程并跳转到课程列表页面
               this.$router.push({ path: `/course/list` });

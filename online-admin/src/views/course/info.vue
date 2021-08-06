@@ -47,13 +47,13 @@
         <el-input
           type="textarea"
           v-model="courseInfo.description"
-          placeholder=" 示例：机器学习项目课：从基础到搭建项目视频课程。"
+          placeholder=" 示例：全程外教一对一教学，在原有学校课堂的基础上，更快速的巩固和提高孩子的英语听说读写综合能力。"
         />
       </el-form-item>
 
       <el-form-item label="课程价格">
         <el-input-number
-          placeholder="免费课程请设置为0元"
+          placeholder="价格默认为0元"
           size="medium"
           :min="0"
           v-model="courseInfo.price"
@@ -62,7 +62,7 @@
       </el-form-item>
       <el-form-item label="课程优惠">
         <el-input-number
-          placeholder="无优惠请设置为0元"
+          placeholder="优惠默认为0元"
           size="medium"
           :min="0"
           v-model="courseInfo.reductionMoney"
@@ -71,25 +71,53 @@
       </el-form-item>
       <el-form-item label="课程封面">
         <!-- 头像缩略图 -->
-        <pan-thumb :image="courseInfo.cover" />
+        <!-- <pan-thumb :image="courseInfo.cover" /> -->
         <!-- 文件上传按钮 -->
-        <el-button round type="primary" icon="el-icon-upload" @click="imagecropperShow=true">添加封面</el-button>
+        <!-- <el-button round type="primary" icon="el-icon-upload" @click="imagecropperShow=true">添加封面</el-button> -->
         <!-- v-show：是否显示上传组件
                   :key：类似于id，如果一个页面多个图片上传控件，可以做区分
                   :url：后台上传的url地址
                   @close：关闭上传组件
                   @crop-upload-success：上传成功后的回调 
         -->
-        <image-cropper
+        <!-- <image-cropper
           v-show="imagecropperShow"
           :width="300"
           :height="300"
           :key="imagecropperKey"
-          :url="BASE_API+'/eduOss/fileOss/uploadAvatar'"
+          :url="BASE_API+'/eduService/oss/upload2Oss'"
           field="file"
           @close="close"
           @crop-upload-success="cropSuccess"
-        />
+        />-->
+        <el-upload
+          :action="BASE_API+'/eduService/oss/upload2Oss'"
+          list-type="picture-card"
+          :auto-upload="true"
+          :limit="1"
+          :on-success="cropSuccess"
+          :before-upload="beforeCoverUpload"
+          :file-list="imgFilesList"
+        >
+          <i slot="default" class="el-icon-plus"></i>
+          <div slot="file" slot-scope="{file}">
+            <img class="el-upload-list__item-thumbnail" :src="courseInfo.cover" alt />
+            <span class="el-upload-list__item-actions">
+              <span class="el-upload-list__item-preview" @click="imgPreview(file)">
+                <i class="el-icon-zoom-in"></i>
+              </span>
+              <span v-if="!disabled" class="el-upload-list__item-delete" @click="imgDownload(file)">
+                <i class="el-icon-download"></i>
+              </span>
+              <span v-if="!disabled" class="el-upload-list__item-delete" @click="imgRemove(file)">
+                <i class="el-icon-delete"></i>
+              </span>
+            </span>
+          </div>
+        </el-upload>
+        <el-dialog :visible.sync="dialogVisible">
+          <img width="100%" :src="dialogImageUrl" alt />
+        </el-dialog>
       </el-form-item>
 
       <el-form-item style="margin-top:30px;text-align: center;">
@@ -106,6 +134,7 @@
 <script>
 import course from "@/api/edu/course";
 import subject from "@/api/edu/subject";
+import oss from "@/api/edu/oss";
 // 引入上传头像
 import ImageCropper from "@/components/ImageCropper";
 import PanThumb from "@/components/PanThumb";
@@ -114,6 +143,10 @@ export default {
   components: { ImageCropper, PanThumb },
   data() {
     return {
+      dialogImageUrl: "",
+      dialogVisible: false,
+      disabled: false,
+
       // 上传组件key的值 (唯一标识)
       imagecropperKey: 0,
       // 上传组件是否显示
@@ -124,6 +157,7 @@ export default {
       teacherList: [],
       subjectList: [],
       subjectIdList: [],
+      imgFilesList: [],
       defaultProps: {
         children: "children",
         label: "title",
@@ -133,8 +167,7 @@ export default {
       courseInfo: {
         id: "",
         title: "",
-        subjectId: "",
-        subjectParentId: "",
+        subjectIds: "",
         teacherId: "",
         description: "",
         cover: "",
@@ -144,11 +177,11 @@ export default {
 
   created() {
     course.getAllTeacher().then((response) => {
-      this.teacherList = response.data.list;
+      this.teacherList = response.data;
     });
 
     subject.getAllList().then((response) => {
-      this.subjectList = response.data.list;
+      this.subjectList = response.data;
     });
 
     this.init();
@@ -165,13 +198,11 @@ export default {
     init() {
       // 根据路径判断是否有id值来决定是否进行数据回显 即区分修改和增加
       if (this.$route.params && this.$route.params.courseId) {
-        this.courseInfo.id = this.$route.params.courseId;
-        this.getCourseInfo();
+        this.getCourseInfo(this.$route.params.courseId);
       } else {
         this.courseInfo = {};
         this.subjectIdList = [];
-        this.courseInfo.cover =
-          process.env.OSS_PATH + "/crouse/course_cover_default.png";
+        this.imgFilesList = [];
       }
     },
 
@@ -182,19 +213,26 @@ export default {
       this.imagecropperKey = this.imagecropperKey + 1;
     },
 
-    // 上传成功的方法  data是封装后的response.data
-    cropSuccess(data) {
+    // 上传成功的方法
+    cropSuccess(response) {
       // 上传之后接口返回图片地址url
-      this.courseInfo.cover = data.url;
-      this.imagecropperShow = false;
+      this.courseInfo.cover = response.data;
+      if (response.success) {
+        this.$message({
+          type: "success",
+          message: "上传成功!",
+        });
+      }
+      // this.imagecropperShow = false;
       // 上传成功后，重新打开上传组件时初始化组件，否则显示上一次的上传结果
-      this.imagecropperKey = this.imagecropperKey + 1;
+      // this.imagecropperKey = this.imagecropperKey + 1;
     },
 
     // 课程封面
     handleCoverSuccess(res) {
       this.courseInfo.cover = res.data.url;
     },
+
     beforeCoverUpload(file) {
       const isJPG =
         file.type === "image/jpeg" ||
@@ -210,6 +248,22 @@ export default {
       return isJPG && isLt2M;
     },
 
+    // 根据课程id查询课程基本信息
+
+    getCourseInfo(courseId) {
+      course.getCourseInfoById(courseId).then((response) => {
+        this.courseInfo = response.data;
+        this.subjectIdList = JSON.parse(response.data.subjectIds);
+        if (response.data.cover) {
+          this.imgFilesList.push({
+            url: response.data.cover,
+            name: response.data.title,
+            id: response.data.id,
+          });
+        }
+      });
+    },
+
     // 判断是添加还是修改
     saveOrUpdate() {
       if (this.$route.params && this.$route.params.courseId) {
@@ -221,11 +275,7 @@ export default {
 
     // 添加课程基本信息
     save() {
-      // 将课程分类级联选择器回显的的subjectIDList中的值赋值给courseInfo
-      this.courseInfo.subjectParentId = this.subjectIdList[0];
-      this.courseInfo.subjectId = this.subjectIdList[1];
-      // 提交到服务器保存
-
+      this.courseInfo.subjectIds = JSON.stringify(this.subjectIdList);
       course.addCourseInfo(this.courseInfo).then((response) => {
         // 提示添加成功
         this.$message({
@@ -234,29 +284,16 @@ export default {
         });
         // 跳转到下一步 并带上课程id
         this.$router.push({
-          path: `/course/chapter/${response.data.id}`,
+          path: `/course/chapter/${response.data}`,
         });
-      });
-    },
-
-    // 根据课程id查询课程基本信息
-
-    getCourseInfo() {
-      course.getCourseInfoVoById(this.courseInfo.id).then((response) => {
-        this.courseInfo = response.data.courseInfo;
-        this.subjectIdList = [
-          response.data.courseInfo.subjectParentId,
-          response.data.courseInfo.subjectId,
-        ];
       });
     },
 
     // 修改课程基本信息
     update() {
+      this.courseInfo.subjectIds = JSON.stringify(this.subjectIdList);
       // 将课程分类级联选择器回显的的subjectIDList中的值赋值给courseInfo
-      this.courseInfo.subjectParentId = this.subjectIdList[0];
-      this.courseInfo.subjectId = this.subjectIdList[1];
-      course.updateCourseInfoVo(this.courseInfo).then((response) => {
+      course.updateCourseInfo(this.courseInfo).then((response) => {
         // 提示修改成功
         this.$message({
           type: "success",
@@ -266,6 +303,29 @@ export default {
         this.$router.push({
           path: `/course/chapter/${this.courseInfo.id}`,
         });
+      });
+    },
+
+    // 封面预览
+    imgPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
+    },
+
+    imgDownload(file) {
+      window.open(file.url,"_blank");
+    },
+
+    imgRemove(file) {
+      var fileUrls = [];
+      fileUrls.push(this.courseInfo.cover);
+      oss.removeBatchOssFile(fileUrls).then(() => {
+        this.$message({
+          type: "success",
+          message: "删除封面成功",
+        });
+        this.imgFilesList = [];
+        this.courseInfo.cover = null;
       });
     },
   },

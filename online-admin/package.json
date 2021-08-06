@@ -2,7 +2,7 @@
   "name": "online-admin",
   "version": "3.8.0",
   "license": "MIT",
-  "description": "在线教育后台管理系统",
+  "description": "假老外后台管理系统",
   "author": "张淞淇",
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "axios": "0.18.0",
-    "echarts": "^4.9.0",
+    "echarts": "^5.0.1",
     "element-ui": "^2.13.2",
     "js-cookie": "2.2.0",
     "node-sass": "^4.14.1",

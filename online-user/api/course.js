@@ -4,9 +4,9 @@ export default {
 
     // 条件分页课程查询
 
-    getCourseList(current,size,courseQuery){
+    getCourseList(courseQuery){
         return request({
-            url: `/eduCms/course/getCourseList/${current}/${size}`,
+            url: `/eduCms/course/getCourseList`,
             method: "post",
             data: courseQuery
         })
@@ -23,9 +23,9 @@ export default {
 
     // 获取课程详情页面所有信息
 
-    getCourseAllInfo(id){
+    getCourseInfo(id){
         return request({
-            url: `/eduCms/course/getCourseAllInfo/${id}`,
+            url: `/eduCms/course/getCourseInfo/${id}`,
             method: "get"
         })
 

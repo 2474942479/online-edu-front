@@ -33,25 +33,16 @@ const user = {
     Login({ commit }, userInfo) {
       const username = userInfo.username.trim()
       return new Promise((resolve, reject) => {
-        login(username, userInfo.password).then(response => { 
-          const data = response.data
-          setToken(data.token)
-          commit('SET_TOKEN', data.token)
-          console.log(data.token)
+        login(username, userInfo.password).then(response => {
+          setToken(response.data)
+          commit('SET_TOKEN', response.data)
+          // console.log("token:",response.data)
           resolve()
         }).catch(error => {
           reject(error)
         })
       })
     },
-    // Login({ commit }) {
-    //   debugger
-    //   const data = {
-    //     'token': 'helen'
-    //   }
-    //   setToken(data.token)// 将token存储在cookie中
-    //   commit('SET_TOKEN', data.token)
-    // },
 
     // 获取用户信息
     async GetInfo({ commit, state }) {
@@ -59,11 +50,12 @@ const user = {
         getInfo(state.token).then(response => {
           // debugger
           const data = response.data
-          if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-            commit('SET_ROLES', data.roles)
+          // console.log("userINfo:",data)
+          if (data.roleNameList && data.roleNameList.length > 0) { // 验证返回的roles是否是一个非空数组
+            commit('SET_ROLES', data.roleNameList)
             //console.log(data.roles)
           } else {
-            reject('getInfo: roles must be a non-null array !')
+            reject('无权查看,请管理员授权后登陆 !')
           }
 
           const buttonAuthList = []
@@ -76,43 +68,17 @@ const user = {
           commit('SET_BUTTONS', buttonAuthList)
           resolve(response)
         }).catch(error => {
-          reject(error)
+          // console.log("error:", error)
+          reject("获取用户失败")
         })
       })
     },
-    // GetInfo({ commit }) {
-    //   debugger
-    //   const data = {
-    //     'roles': [
-    //       'admin'
-    //     ],
-    //     'name': 'helen',
-    //     'avatar': 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-5670helen3b4acafe.gif'
-    //   }
-    //   if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-    //     commit('SET_ROLES', data.roles)
-    //   }
-    //   commit('SET_NAME', data.name)
-    //   commit('SET_AVATAR', data.avatar)
-    // },
 
     // 登出
-    // LogOut({ commit, state }) {
-    //   return new Promise((resolve, reject) => {
-    //     logout(state.token).then(() => {
-    //       commit('SET_TOKEN', '')
-    //       commit('SET_ROLES', [])
-    //       removeToken()
-    //       resolve()
-    //     }).catch(error => {
-    //       reject(error)
-    //     })
-    //   })
-    // },
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
         logout(state.token).then(() => {
-          debugger
+          // debugger
           commit('SET_TOKEN', '')// 清空前端vuex中存储的数据
           commit('SET_ROLES', [])// 清空前端vuex中存储的数据
           commit('SET_BUTTONS', [])

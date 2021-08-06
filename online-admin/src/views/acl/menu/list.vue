@@ -1,19 +1,17 @@
 <template>
   <div class="app-container">
-    <el-input v-model="filterText" placeholder="请输入关键字" style="margin-bottom:30px;" />
-
     <el-table
       :data="menuList"
       style="width: 100%;margin-bottom: 20px;"
       row-key="id"
       border
-      default-expand-all
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
       <el-table-column prop="name" label="名称" sortable align="center" width="300"></el-table-column>
       <el-table-column prop="path" label="访问路径" sortable align="center" width="300"></el-table-column>
       <el-table-column prop="component" label="组件路径" sortable align="center" width="300"></el-table-column>
       <el-table-column prop="permissionValue" align="center" label="权限值"></el-table-column>
+      <el-table-column prop="icon" align="center" label="图标值"></el-table-column>
       <el-table-column align="center" label="操作">
         <template slot-scope="scope">
           <!-- v-if="node.level == 1 || node.level == 2" v-if="node.level == 3" v-if="node.level == 4"-->
@@ -21,25 +19,25 @@
             v-if="(scope.row.level == 1 || scope.row.level == 2) && hasPerm('permission.add')"
             type="text"
             size="medium"
-            @click="() => {dialogFormVisible = true, menu.pid = scope.row.id}"
+            @click="() => {dialogFormValue = '添加菜单', dialogFormVisible = true, menu.pid = scope.row.id}"
           >添加菜单</el-button>
           <el-button
             v-if="scope.row.level == 3 &&  hasPerm('permission.add')"
             type="text"
             size="medium"
-            @click="() => {dialogPermissionVisible = true, permission.pid = scope.row.id}"
+            @click="() => {dialogPermissionValue = '添加功能', dialogPermissionVisible = true, permission.pid = scope.row.id}"
           >添加功能</el-button>
           <el-button
             v-if="scope.row.level == 4 &&  hasPerm('permission.update')"
             type="text"
             size="medium"
             @click="() => updateFunction(scope.row)"
-          >修改功能</el-button>
+          >修改</el-button>
           <el-button
             v-if="scope.row.level != 4 &&  hasPerm('permission.update')"
             type="text"
             size="medium"
-            @click="() => getById(scope.row)"
+            @click="() => updateMenu(scope.row)"
           >修改</el-button>
           <el-button
             type="text"
@@ -62,14 +60,17 @@
         <el-form-item label="组件路径" prop="component">
           <el-input v-model="menu.component" />
         </el-form-item>
+        <el-form-item label="组件图标" prop="icon">
+          <el-input v-model="menu.icon" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="restData()">取 消</el-button>
-        <el-button type="primary" @click="append()">确 定</el-button>
+        <el-button type="primary" @click="appendMenu()">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 添加功能的窗口 -->
-    <el-dialog :visible.sync="dialogPermissionVisible" title="添加功能">
+    <el-dialog :visible.sync="dialogPermissionVisible" :title="dialogPermissionValue">
       <el-form
         ref="permission"
         :model="permission"
@@ -91,7 +92,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="restData()">取 消</el-button>
-        <el-button type="primary" @click="appendPermission()">确 定</el-button>
+        <el-button type="primary" @click="appendFunction()">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -104,8 +105,10 @@ const menuForm = {
   name: "",
   pid: 0,
   path: "",
+  icon:"",
   component: "",
   type: "1",
+  status: "1",
 };
 const perForm = {
   permissionValue: "",
@@ -114,6 +117,7 @@ const perForm = {
   path: "",
   component: "",
   pid: 0,
+  status: "1",
 };
 
 export default {
@@ -127,6 +131,7 @@ export default {
       },
       dialogFormValue: "添加菜单",
       dialogFormVisible: false,
+      dialogPermissionValue: "添加功能",
       dialogPermissionVisible: false,
       menu: menuForm,
       permission: perForm,
@@ -149,35 +154,20 @@ export default {
       },
     };
   },
-  // 监听上面文本框搜索
-  watch: {
-    filterText(val) {
-      this.$refs.menuTree.filter(val);
-    },
-  },
 
   created() {
     SVGPoint;
-    this.fetchNodeList();
+    this.initData();
   },
 
   methods: {
-    fetchNodeList() {
-      menu.getNestedTreeList().then((response) => {
-        if (response.success === true) {
-          console.log(response.data.permissionList);
-          this.menuList = response.data.permissionList;
-          console.log(this.menuList);
-        }
+    initData() {
+      menu.getAllPermission().then((response) => {
+        this.menuList = response.data;
       });
     },
-    filterNode(value, data) {
-      if (!value) return true;
-      return data.title.toLowerCase().indexOf(value.toLowerCase()) !== -1;
-    },
-    remove(data) {
-      console.log(data);
 
+    remove(data) {
       this.$confirm("此操作将永久删除该记录, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -186,85 +176,35 @@ export default {
         .then(() => {
           return menu.removeById(data.id);
         })
-        .then(() => {
-          this.fetchNodeList(); // 刷新列表
-          this.$message({
-            type: "success",
-            message: "删除成功!",
-          });
-        })
-        .catch((response) => {
-          // 失败
-          if (response === "cancel") {
+        .then((response) => {
+          if (response.success) {
+            this.initData(); // 刷新列表
             this.$message({
-              type: "info",
-              message: "已取消删除",
-            });
-          } else {
-            this.$message({
-              type: "error",
-              message: "删除失败",
+              type: "success",
+              message: "删除成功!",
             });
           }
         });
     },
-    appendPermission() {
+
+    appendFunction() {
       this.$refs.permission.validate((valid) => {
         if (valid) {
           if (this.permission.id) {
             this.update(this.permission);
           } else {
-            menu.saveLevelOne(this.permission).then((response) => {
-              this.dialogPermissionVisible = false;
-              this.$message({
-                type: "success",
-                message: "添加功能成功",
-              });
-              // 刷新页面
-              this.fetchNodeList();
-              this.menu = { ...menuForm };
-              this.permission = { ...perForm };
-            });
+            this.save(this.permission);
           }
         }
       });
     },
-    appendLevelOne() {
-      menu
-        .saveLevelOne(this.menu)
-        .then((response) => {
-          this.dialogFormVisible = false;
-          this.$message({
-            type: "success",
-            message: "添加一级菜单成功",
-          });
-          // 刷新页面
-          this.fetchNodeList();
-          this.menu = { ...menuForm };
-          this.permission = { ...perForm };
-        })
-        .catch((response) => {
-          // 你们写：判断点击取消清空一下
-          this.dialogFormVisible = false;
-          this.$message({
-            type: "error",
-            message: "添加一级菜单失败",
-          });
-          this.menu = { ...menuForm };
-          this.permission = { ...perForm };
-        });
-    },
 
-    append() {
+    appendMenu() {
       this.$refs.menu.validate((valid) => {
         if (valid) {
           if (!this.menu.id) {
             // 添加
-            if (this.menu.pid == 0) {
-              this.appendLevelOne(); // 一级分类的添加
-            } else {
-              this.appendLevelTwo(); // 二级分类的添加
-            }
+            this.save(this.menu);
           } else {
             // 修改
             this.update(this.menu);
@@ -273,8 +213,20 @@ export default {
       });
     },
 
+    save(obj) {
+      menu.save(obj).then((response) => {
+        this.dialogFormVisible = false;
+        this.$message({
+          type: "success",
+          message: "添加成功",
+        });
+        // 刷新页面
+        this.initData();
+        this.restData();
+      });
+    },
+
     update(obj) {
-      debugger;
       menu.update(obj).then((response) => {
         this.dialogFormVisible = false;
         this.$message({
@@ -282,48 +234,23 @@ export default {
           message: "修改成功",
         });
         // 刷新页面
-        this.fetchNodeList();
+        this.initData();
         this.restData();
       });
     },
-    appendLevelTwo() {
-      menu
-        .saveLevelOne(this.menu)
-        .then((response) => {
-          // 1、把文本框关
-          this.dialogFormVisible = false;
-          // 2、提示成功
-          this.$message({
-            type: "success",
-            message: "添加二级分类成功",
-          });
-          // 3、刷新页面
-          this.fetchNodeList();
-          // 4、把menu清空
-          this.menu = { ...menuForm };
-          this.permission = { ...perForm };
-        })
-        .catch((response) => {
-          // 1、把文本框关
-          this.dialogFormVisible = false;
-          // 2、提示成功
-          this.$message({
-            type: "error",
-            message: "添加二级分类失败",
-          });
-          // 3、把menu清空
-          this.menu = { ...menuForm };
-          this.permission = { ...perForm };
-        });
-    },
-    getById(data) {
+
+    updateMenu(data) {
+      this.dialogFormValue = "修改菜单";
       this.dialogFormVisible = true;
       this.menu = data;
     },
+
     updateFunction(data) {
+      this.dialogPermissionValue = "修改功能";
       this.dialogPermissionVisible = true;
       this.permission = data;
     },
+
     restData() {
       this.dialogPermissionVisible = false;
       this.dialogFormVisible = false;

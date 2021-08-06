@@ -4,20 +4,21 @@ export default {
 
 
     // 发表评论
-    saveComment(commentInfo) {
+    saveComment(commentDTO) {
         return request({
             url: `/eduCms/comment/saveCommentInfo`,
             method: "post",
-            data: commentInfo
+            data: commentDTO
         })
     },
 
     // 分页查询评论
 
-    getCommentList(current, size, courseId) {
+    getCommentList(commentQueryDTO) {
         return request({
-            url: `/eduCms/comment/${current}/${size}/${courseId}`,
-            method: "get",
+            url: `/eduCms/comment/getCommentList`,
+            method: "post",
+            data: commentQueryDTO
         })
     }
 
